@@ -98,8 +98,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Add the sphere node to the scene
         sceneView.scene.rootNode.addChildNode(sphereNode)
         // If this is not the first point in the drawing, connect the current point with the previous point using a line
-        if let previousNode = previousNode {
-            let lineNode = createLine(from: previousNode, to: sphereNode)
+        if previousNode != nil {
             sceneView.scene.rootNode.addChildNode(sphereNode)
         }
         // Update the previous node to be the current sphere node for the next point
@@ -145,28 +144,40 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         return sphereNodes
     }
     
+    // This function will save drawing data as a json object
+    // NOTE: This is untested as of now.
+    func saveLine(line: [SCNNode]) {
+        var sphereData = [SphereData]()
+        for sphere in line {
+            let data = SphereData(position: sphere.position, radius: sphere.geometry?.boundingSphere.radius ?? 0)
+            sphereData.append(data)
+        }
+        let jsonEncoder = JSONEncoder()
+        if let jsonData = try? jsonEncoder.encode(sphereData) {
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print(jsonString)
+                // TODO: Add functionality
+            }
+        }
+    }
+
+    
     // This struct will hold the positional data of the spheres ready to store as a json object
-    struct SphereData: Decodable {
+    struct SphereData: Encodable {
         let position: SCNVector3
         let radius: Float
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            position = SCNVector3(
-                x: try container.decode(Float.self, forKey: .x),
-                y: try container.decode(Float.self, forKey: .y),
-                z: try container.decode(Float.self, forKey: .z)
-            )
-            radius = try container.decode(Float.self, forKey: .radius)
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(position.x, forKey: .x)
+            try container.encode(position.y, forKey: .y)
+            try container.encode(position.z, forKey: .z)
+            try container.encode(radius, forKey: .radius)
         }
-
+        
         private enum CodingKeys: String, CodingKey {
             case x, y, z, radius
         }
-    }
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
     }
     
 }
