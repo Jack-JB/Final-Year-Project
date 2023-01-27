@@ -145,6 +145,26 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         return sphereNodes
     }
     
+    // This struct will hold the positional data of the spheres ready to store as a json object
+    struct SphereData: Decodable {
+        let position: SCNVector3
+        let radius: Float
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            position = SCNVector3(
+                x: try container.decode(Float.self, forKey: .x),
+                y: try container.decode(Float.self, forKey: .y),
+                z: try container.decode(Float.self, forKey: .z)
+            )
+            radius = try container.decode(Float.self, forKey: .radius)
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case x, y, z, radius
+        }
+    }
+    
     override var canBecomeFirstResponder: Bool {
         return true
     }
