@@ -17,6 +17,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     var sceneView: ARSCNView!
     var currentNode: SCNNode?
     var previousNode: SCNNode?
+
+    // MARK: - UI component functionality
+    
+    @objc func saveButtonAction() {
+        // TODO: - Save button functionality
+    }
+    
+    @objc func loadButtonAction() {
+        // TODO: - Load button functionality
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,11 +58,27 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
 
         // Enable plane detection
         configuration.planeDetection = [.horizontal]
+        
+        // MARK: - UI component declaration
+        
+        let saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.frame = CGRect(x: 20, y: 800, width: 100, height: 44)
+        saveButton.addTarget(self, action: #selector(saveButtonAction), for: .touchUpInside)
+        saveButton.backgroundColor = .darkGray
+        view.addSubview(saveButton)
+        
+        let loadButton = UIButton(type: .system)
+        loadButton.setTitle("Load", for: .normal)
+        loadButton.frame = CGRect(x: 310, y: 800, width: 100, height: 44)
+        loadButton.addTarget(self, action: #selector(loadButtonAction), for: .touchUpInside)
+        loadButton.backgroundColor = .darkGray
+        view.addSubview(loadButton)
 
         // Run the view's session
         sceneView.session.run(configuration)
     }
-
+  
     // MARK: - Touch even management
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -160,7 +186,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-
     
     // This struct will hold the positional data of the spheres ready to store as a json object
     struct SphereData: Encodable {
@@ -179,5 +204,4 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             case x, y, z, radius
         }
     }
-    
 }
