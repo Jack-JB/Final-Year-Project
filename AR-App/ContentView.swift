@@ -79,34 +79,33 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
       sceneView.session.run(configuration)
   }
   
-  // MARK: - Touch even management
-  
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    // Get the first touch event from the set of touch events
-    guard let touch = touches.first else { return }
-
-    // Create a raycast query starting from the touch location in the sceneView
-    let raycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
-
-    // Perform the raycast query
-    let results = sceneView.session.raycast(raycastQuery)
-
-    // Get the first result of the raycast query
-    guard let hitResult = results.first else { return }
-
-    // Get the position of the hit result
-    let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
-
-    // Create a new node with a sphere geometry
-    currentNode = SCNNode()
-    currentNode?.geometry = SCNSphere(radius: 0.01)
-
-    // Position the node at the hit result position
-    currentNode?.position = position
-
-    // Add the node to the scene's root node
-    sceneView.scene.rootNode.addChildNode(currentNode!)
-  }
+    // MARK: - Touch even management
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
+        let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
+        
+        let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
+        let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
+        
+        var hitResult: ARRaycastResult
+        
+        if let horizontalHitResult = horizontalResults.first {
+            hitResult = horizontalHitResult
+        } else if let verticalHitResult = verticalResults.first {
+            hitResult = verticalHitResult
+        } else {
+            return
+        }
+        
+        let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+        
+        currentNode = SCNNode()
+        currentNode?.geometry = SCNSphere(radius: 0.01)
+        currentNode?.position = position
+        sceneView.scene.rootNode.addChildNode(currentNode!)
+    }
     
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard let touch = touches.first else { return }
@@ -130,7 +129,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     // Update the previous node to be the current sphere node for the next point
     previousNode = sphereNode
-    
   }
     
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -170,40 +168,5 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
       }
         // Return the array of sphere nodes
         return sphereNodes
-  }
-    
-  // This function will save drawing data as a json object
-  // NOTE: This is untested as of now.
-  func saveLine(line: [SCNNode]) {
-    var sphereData = [SphereData]()
-    for sphere in line {
-      let data = SphereData(position: sphere.position, radius: sphere.geometry?.boundingSphere.radius ?? 0)
-        sphereData.append(data)
-      }
-      let jsonEncoder = JSONEncoder()
-      if let jsonData = try? jsonEncoder.encode(sphereData) {
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-          print(jsonString)
-          // TODO: Add functionality
-        }
-      }
-  }
-    
-  // This struct will hold the positional data of the spheres ready to store as a json object
-  struct SphereData: Encodable {
-    let position: SCNVector3
-    let radius: Float
-        
-    func encode(to encoder: Encoder) throws {
-      var container = encoder.container(keyedBy: CodingKeys.self)
-      try container.encode(position.x, forKey: .x)
-      try container.encode(position.y, forKey: .y)
-      try container.encode(position.z, forKey: .z)
-      try container.encode(radius, forKey: .radius)
-    }
-        
-  private enum CodingKeys: String, CodingKey {
-    case x, y, z, radius
-    }
   }
 }
