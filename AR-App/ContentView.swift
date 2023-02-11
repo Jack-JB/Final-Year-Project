@@ -14,9 +14,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
   
   // MARK: - Class Properties
   
-  var sceneView: ARSCNView!
+  @IBOutlet weak var sceneView: ARSCNView!
   var currentNode: SCNNode?
   var previousNode: SCNNode?
+  var nodes: [SCNNode] = []
 
   // MARK: - UI component functionality
   
@@ -64,16 +65,23 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
       let saveButton = UIButton(type: .system)
       saveButton.setTitle("Save", for: .normal)
       saveButton.frame = CGRect(x: 20, y: 800, width: 100, height: 44)
-      saveButton.addTarget(self, action: #selector(saveButtonAction), for: .touchUpInside)
+      saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
       saveButton.backgroundColor = .darkGray
       view.addSubview(saveButton)
       
       let loadButton = UIButton(type: .system)
       loadButton.setTitle("Load", for: .normal)
       loadButton.frame = CGRect(x: 310, y: 800, width: 100, height: 44)
-      loadButton.addTarget(self, action: #selector(loadButtonAction), for: .touchUpInside)
+      loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
       loadButton.backgroundColor = .darkGray
       view.addSubview(loadButton)
+      
+      let clearButton = UIButton(type: .system)
+      clearButton.setTitle("Clear", for: .normal)
+      clearButton.frame = CGRect(x: 215, y: 800, width: 100, height: 44)
+      clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
+      clearButton.backgroundColor = .darkGray
+      view.addSubview(clearButton)
 
       // Run the view's session
       sceneView.session.run(configuration)
@@ -138,35 +146,111 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
   // MARK: - createLine function
     
   // This handles the functionality of creating lines from a series of sphere nodes
-  func createLine(from node1: SCNNode, to node2: SCNNode) -> [SCNNode] {
-    // Initialize an empty array to store the sphere nodes
-    var sphereNodes: [SCNNode] = []
-    // Calculate the distance between the two nodes
-    let distance = sqrt(
-      pow(node1.position.x - node2.position.x, 2) +
-      pow(node1.position.y - node2.position.y, 2) +
-      pow(node1.position.z - node2.position.z, 2)
-    )
-    // Determine the number of spheres to create based on the distance
-    let numSpheres = Int(distance / 0.01)
-    // Calculate the distance between each sphere
-    let sphereDistance = distance / Float(numSpheres)
-    // Create a vector to represent the direction of the line
-    let lineVector = SCNVector3(node2.position.x - node1.position.x, node2.position.y - node1.position.y, node2.position.z - node1.position.z)
-    // Iterate through the number of spheres to create
-    for i in 0..<numSpheres {
-      // Create a sphere node
-      let sphereNode = SCNNode()
-      // Set the sphere's geometry to a sphere with a radius of 0.005
-      sphereNode.geometry = SCNSphere(radius: 0.005)
-      // Calculate the position of the sphere based on the line vector and distance between spheres
-      let position = SCNVector3(node1.position.x + lineVector.x * (sphereDistance * Float(i)), node1.position.y + lineVector.y * (sphereDistance * Float(i)), node1.position.z + lineVector.z * (sphereDistance * Float(i)))
-      // Set the sphere node's position to the calculated position
-      sphereNode.position = position
-      // Append the sphere node to the array of sphere nodes
-      sphereNodes.append(sphereNode)
+    func createLine(from node1: SCNNode, to node2: SCNNode) -> [SCNNode] {
+        // Initialize an empty array to store the sphere nodes
+        var sphereNodes: [SCNNode] = []
+        // Calculate the distance between the two nodes
+        let distance = sqrt(
+          pow(node1.position.x - node2.position.x, 2) +
+          pow(node1.position.y - node2.position.y, 2) +
+          pow(node1.position.z - node2.position.z, 2)
+        )
+        // Determine the number of spheres to create based on the distance
+        let numSpheres = Int(distance / 0.01)
+        // Calculate the distance between each sphere
+        let sphereDistance = distance / Float(numSpheres)
+        // Create a vector to represent the direction of the line
+        let lineVector = SCNVector3(node2.position.x - node1.position.x, node2.position.y - node1.position.y, node2.position.z - node1.position.z)
+        // Iterate through the number of spheres to create
+        for i in 0..<numSpheres {
+          // Create a sphere node
+          let sphereNode = SCNNode()
+          // Set the sphere's geometry to a sphere with a radius of 0.005
+          sphereNode.geometry = SCNSphere(radius: 0.005)
+          // Calculate the position of the sphere based on the line vector and distance between spheres
+          let position = SCNVector3(node1.position.x + lineVector.x * (sphereDistance * Float(i)), node1.position.y + lineVector.y * (sphereDistance * Float(i)), node1.position.z + lineVector.z * (sphereDistance * Float(i)))
+          // Set the sphere node's position to the calculated position
+          sphereNode.position = position
+          // Append the sphere node to the array of sphere nodes
+          sphereNodes.append(sphereNode)
+          nodes.append(sphereNode)
+          }
+            // Return the array of sphere nodes
+            return sphereNodes
       }
-        // Return the array of sphere nodes
-        return sphereNodes
-  }
+    
+    @objc func save() {
+        // Get the URL to the documents directory
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        // Set the file name for the saved scene
+        let fileName = "Scene.arobject"
+        // Create the URL for the saved scene file
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        // Create an NSKeyedArchiver object to encode the nodes array
+        let archiver = NSKeyedArchiver(requiringSecureCoding: false)
+        // Encode the nodes array
+        archiver.encode(nodes, forKey: "nodes")
+        // Write the encoded data to the file
+        let data = archiver.encodedData
+        do {
+            try data.write(to: fileURL)
+        } catch {
+            print("Error saving scene: \(error)")
+        }
+    }
+
+    func load() -> [SCNNode] {
+            // Get the URL to the documents directory
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            // Set the file name for the saved scene
+            let fileName = "Scene.arobject"
+            // Create the URL for the saved scene file
+            let fileURL = documentsDirectory.appendingPathComponent(fileName)
+            // Initialize an NSKeyedUnarchiver object to decode the data from the file
+            do {
+                let data = try Data(contentsOf: fileURL)
+                let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
+                // Decode the nodes array from the file
+                let decodedNodes = unarchiver.decodeObject(forKey: "nodes") as? [SCNNode]
+                // Check if the decoded nodes array is not nil
+                if let decodedNodes = decodedNodes {
+                    // Return the decoded nodes array
+                    for node in decodedNodes {
+                            print(node)
+                        }
+                    return decodedNodes
+                } else {
+                    print("Error loading scene")
+                }
+            } catch {
+                print("Error reading data from file")
+            }
+            return []
+        }
+
+    @IBAction func loadButtonPressed(_ sender: Any) {
+            nodes = load()
+            for node in nodes {
+                sceneView.scene.rootNode.addChildNode(node)
+            }
+        }
+    
+    @IBAction func saveButtonPressed(_ sender: Any) {
+        save()
+    }
+    
+    @IBAction func clearButtonPressed(_ sender: Any) {
+        clear()
+    }
+    
+    func removeNode(_ node: SCNNode) {
+        node.removeFromParentNode()
+        nodes = nodes.filter { $0 !== node }
+    }
+    
+    @objc func clear() {
+        for node in nodes {
+            removeNode(node)
+        }
+    }
 }
