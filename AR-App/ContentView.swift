@@ -115,6 +115,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(currentNode!)
     }
     
+  // TODO: First and last node are not part of the array, this needs fixing as they will not be destroyed
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard let touch = touches.first else { return }
     // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
@@ -137,6 +138,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     // Extract the 3D position of the hit result
     let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
     // Create a new sphere node at the touch position
+    let color = UIColor.red
+      changeNodeColour(nodes, color: color)
+
     let sphereNode = SCNNode()
     sphereNode.geometry = SCNSphere(radius: 0.01)
     sphereNode.position = position
@@ -191,6 +195,17 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             // Return the array of sphere nodes
             return sphereNodes
       }
+    
+    // TODO: Create a UI button to handle this function
+    func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
+        for node in nodes {
+            if let geometry = node.geometry {
+                let material = geometry.firstMaterial!
+                material.diffuse.contents = color
+            }
+        }
+    }
+
     
     func save() {
         // Get the URL to the documents directory
