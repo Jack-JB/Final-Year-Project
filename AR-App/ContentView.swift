@@ -14,7 +14,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
   
   // MARK: - Class Properties
   
-  @IBOutlet weak var sceneView: ARSCNView!
+  @IBOutlet var sceneView: ARSCNView!
   var currentNode: SCNNode?
   var previousNode: SCNNode?
   var nodes: [SCNNode] = []
@@ -136,6 +136,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(sphereNode)
     }
     // Update the previous node to be the current sphere node for the next point
+    nodes.append(sphereNode)
     previousNode = sphereNode
   }
     
@@ -179,7 +180,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             return sphereNodes
       }
     
-    @objc func save() {
+    func save() {
         // Get the URL to the documents directory
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         // Set the file name for the saved scene
@@ -248,7 +249,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         nodes = nodes.filter { $0 !== node }
     }
     
-    @objc func clear() {
+    func clear() {
         for node in nodes {
             removeNode(node)
         }
