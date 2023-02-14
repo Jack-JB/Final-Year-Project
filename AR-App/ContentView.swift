@@ -118,10 +118,22 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
   override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard let touch = touches.first else { return }
     // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
-    let raycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
-    // Perform the raycast query and get the results
-    let results = sceneView.session.raycast(raycastQuery)
-    guard let hitResult = results.first else { return }
+      let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
+      let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
+      
+      // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
+      let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
+      let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
+      
+      var hitResult: ARRaycastResult
+      
+      if let horizontalHitResult = horizontalResults.first {
+          hitResult = horizontalHitResult
+      } else if let verticalHitResult = verticalResults.first {
+          hitResult = verticalHitResult
+      } else {
+          return
+      }
     // Extract the 3D position of the hit result
     let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
     // Create a new sphere node at the touch position
