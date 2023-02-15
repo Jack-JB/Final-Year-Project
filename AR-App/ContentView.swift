@@ -12,80 +12,71 @@ import ARKit
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
   
-  // MARK: - Class Properties
+    // MARK: - Class Properties
   
-  @IBOutlet var sceneView: ARSCNView!
-  var currentNode: SCNNode?
-  var previousNode: SCNNode?
-  var nodes: [SCNNode] = []
-
-  // MARK: - UI component functionality
-  
-  @objc func saveButtonAction() {
-  // TODO: - Save button functionality
-  }
-  
-  @objc func loadButtonAction() {
-      // TODO: - Load button functionality
-  }
+    @IBOutlet var sceneView: ARSCNView!
+    var currentNode: SCNNode?
+    var previousNode: SCNNode?
+    var firstNode: SCNNode?
+    var nodes: [SCNNode] = []
     
-  override func viewDidLoad() {
-      super.viewDidLoad()
-      
-      // Set up the ARSCNView
-      sceneView = ARSCNView(frame: view.bounds)
-      sceneView.delegate = self
-      view.addSubview(sceneView)
-      
-      // Set the view's delegate
-      sceneView.delegate = self
-      
-      // Show statistics such as fps and timing information
-      sceneView.showsStatistics = true
-      
-      // Configure the session
-      let configuration = ARWorldTrackingConfiguration()
-      sceneView.session.run(configuration)
-      
-      // Make the view controller the first responder
-      becomeFirstResponder()
-  }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Set up the ARSCNView
+        sceneView = ARSCNView(frame: view.bounds)
+        sceneView.delegate = self
+        view.addSubview(sceneView)
+        
+        // Set the view's delegate
+        sceneView.delegate = self
+        
+        // Show statistics such as fps and timing information
+        sceneView.showsStatistics = true
+        
+        // Configure the session
+        let configuration = ARWorldTrackingConfiguration()
+        sceneView.session.run(configuration)
+        
+        // Make the view controller the first responder
+        becomeFirstResponder()
+    }
     
-  override func viewWillAppear(_ animated: Bool) {
-      super.viewWillAppear(animated)
-      
-      // Create a session configuration
-      let configuration = ARWorldTrackingConfiguration()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Create a session configuration
+        let configuration = ARWorldTrackingConfiguration()
 
-      // Enable plane detection
-      configuration.planeDetection = [.horizontal]
-      
-      // MARK: - UI component declaration
-      
-      let saveButton = UIButton(type: .system)
-      saveButton.setTitle("Save", for: .normal)
-      saveButton.frame = CGRect(x: 20, y: 800, width: 100, height: 44)
-      saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
-      saveButton.backgroundColor = .darkGray
-      view.addSubview(saveButton)
-      
-      let loadButton = UIButton(type: .system)
-      loadButton.setTitle("Load", for: .normal)
-      loadButton.frame = CGRect(x: 310, y: 800, width: 100, height: 44)
-      loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
-      loadButton.backgroundColor = .darkGray
-      view.addSubview(loadButton)
-      
-      let clearButton = UIButton(type: .system)
-      clearButton.setTitle("Clear", for: .normal)
-      clearButton.frame = CGRect(x: 215, y: 800, width: 100, height: 44)
-      clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
-      clearButton.backgroundColor = .darkGray
-      view.addSubview(clearButton)
+        // Enable plane detection
+        configuration.planeDetection = [.horizontal]
+        
+        // MARK: - UI component declaration
+        
+        let saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.frame = CGRect(x: 20, y: 800, width: 100, height: 44)
+        saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
+        saveButton.backgroundColor = .darkGray
+        view.addSubview(saveButton)
+        
+        let loadButton = UIButton(type: .system)
+        loadButton.setTitle("Load", for: .normal)
+        loadButton.frame = CGRect(x: 310, y: 800, width: 100, height: 44)
+        loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
+        loadButton.backgroundColor = .darkGray
+        view.addSubview(loadButton)
+        
+        let clearButton = UIButton(type: .system)
+        clearButton.setTitle("Clear", for: .normal)
+        clearButton.frame = CGRect(x: 215, y: 800, width: 100, height: 44)
+        clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
+        clearButton.backgroundColor = .darkGray
+        view.addSubview(clearButton)
 
-      // Run the view's session
-      sceneView.session.run(configuration)
-  }
+        // Run the view's session
+        sceneView.session.run(configuration)
+    }
   
     // MARK: - Touch even management
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -115,54 +106,51 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(currentNode!)
     }
     
-  // TODO: First and last node are not part of the array, this needs fixing as they will not be destroyed
-  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let touch = touches.first else { return }
-    // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
-      let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
-      let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
-      
-      // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
-      let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
-      let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
-      
-      var hitResult: ARRaycastResult
-      
-      if let horizontalHitResult = horizontalResults.first {
-          hitResult = horizontalHitResult
-      } else if let verticalHitResult = verticalResults.first {
-          hitResult = verticalHitResult
-      } else {
-          return
-      }
-    // Extract the 3D position of the hit result
-    let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
-    // Create a new sphere node at the touch position
-    let color = UIColor.red
-      changeNodeColour(nodes, color: color)
-
-    let sphereNode = SCNNode()
-    sphereNode.geometry = SCNSphere(radius: 0.01)
-    sphereNode.position = position
-    // Add the sphere node to the scene
-    sceneView.scene.rootNode.addChildNode(sphereNode)
-    // If this is not the first point in the drawing, connect the current point with the previous point using a line
+    // TODO: First and last node are not part of the array, this needs fixing as they will not be destroyed
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+            guard let touch = touches.first else { return }
+            // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
+            let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
+            let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
+          
+            // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
+            let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
+            let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
+          
+            var hitResult: ARRaycastResult
+          
+            if let horizontalHitResult = horizontalResults.first {
+                hitResult = horizontalHitResult
+            } else if let verticalHitResult = verticalResults.first {
+                hitResult = verticalHitResult
+            } else {
+                return
+            }
+            // Extract the 3D position of the hit result
+            let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+          
+            let color = UIColor.red
+            changeNodeColour(nodes, color: color)
         
-    if previousNode != nil {
-        sceneView.scene.rootNode.addChildNode(sphereNode)
-    }
-    // Update the previous node to be the current sphere node for the next point
-    nodes.append(sphereNode)
-    previousNode = sphereNode
-  }
-    
-  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    currentNode = nil
-  }
+            // Create a new sphere node at the touch position
+            let sphereNode = SCNNode()
+            sphereNode.geometry = SCNSphere(radius: 0.01)
+            sphereNode.position = position
+            // Add the sphere node to the scene
+            sceneView.scene.rootNode.addChildNode(sphereNode)
+            // If this is not the first point in the drawing, connect the current point with the previous point using a line
+            
+            if previousNode != nil {
+                sceneView.scene.rootNode.addChildNode(sphereNode)
+            }
+            // Update the previous node to be the current sphere node for the next point
+            nodes.append(sphereNode)
+            previousNode = sphereNode
+        }
 
-  // MARK: - createLine function
+    // MARK: - createLine function
     
-  // This handles the functionality of creating lines from a series of sphere nodes
+    // This handles the functionality of creating lines from a series of sphere nodes
     func createLine(from node1: SCNNode, to node2: SCNNode) -> [SCNNode] {
         // Initialize an empty array to store the sphere nodes
         var sphereNodes: [SCNNode] = []
@@ -194,7 +182,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
           }
             // Return the array of sphere nodes
             return sphereNodes
-      }
+    }
     
     // TODO: Create a UI button to handle this function
     func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
