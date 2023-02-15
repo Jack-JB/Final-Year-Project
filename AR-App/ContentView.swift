@@ -137,14 +137,16 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?) {
         let color = UIColor.red
         changeNodeColour(nodes, color: color)
+        
         // Create a new sphere node at the touch position
         let sphereNode = SCNNode()
         sphereNode.geometry = SCNSphere(radius: 0.01)
         sphereNode.position = position
+        
         // Add the sphere node to the scene
         sceneView.scene.rootNode.addChildNode(sphereNode)
-        // If this is not the first point in the drawing, connect the current point with the previous point using a line
         
+        // If this is not the first point in the drawing, connect the current point with the previous point using a line
         if previousNode != nil {
             sceneView.scene.rootNode.addChildNode(sphereNode)
         }
@@ -163,7 +165,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         }
     }
 
-    
+    // MARK: - Save, Load functionality
     func save() {
         // Get the URL to the documents directory
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
