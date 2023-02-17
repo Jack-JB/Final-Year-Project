@@ -10,9 +10,12 @@ import SceneKit
 
 
 class JsonManager {
+    private let fileManager = FileManager.default
+    
+    init() {}
+    
     func nodesToJSON(nodes: [SCNNode]) -> String? {
         var jsonArray: [[String: Any]] = []
-
         for node in nodes {
             var jsonDict: [String: Any] = [:]
             jsonDict["name"] = node.name ?? ""
@@ -32,11 +35,19 @@ class JsonManager {
                 "z": node.rotation.z,
                 "w": node.rotation.w
             ]
+            if let material = node.geometry?.firstMaterial {
+                let color = SCNVector3ToGLKVector3(material.diffuse.contents as! SCNVector3)
+                jsonDict["color"] = [
+                    "r": color.x,
+                    "g": color.y,
+                    "b": color.z
+                ]
+            }
             jsonArray.append(jsonDict)
         }
-
+        let rootDict = ["nodes": jsonArray]
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: jsonArray, options: [])
+            let jsonData = try JSONSerialization.data(withJSONObject: rootDict, options: [])
             let jsonString = String(data: jsonData, encoding: .utf8)
             return jsonString
         } catch {
@@ -44,14 +55,14 @@ class JsonManager {
             return nil
         }
     }
-    
+
     func saveNodesAsJSONFile(nodes: [SCNNode], fileName: String) -> Bool {
         guard let jsonString = nodesToJSON(nodes: nodes) else {
             print("Error generating JSON data")
             return false
         }
 
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Error getting documents directory")
             return false
         }
@@ -68,35 +79,27 @@ class JsonManager {
         }
     }
     
-    
-    
-    func loadNodes(fromJSONFile filename: String) -> [SCNNode] {
-        guard let fileURL = Bundle.main.url(forResource: filename, withExtension: "json") else {
-            fatalError("Failed to locate JSON file")
+    func printJSONFileContents(fileName: String) {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Error getting documents directory")
+            return
         }
-        
+
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+
         do {
             let jsonData = try Data(contentsOf: fileURL)
-            guard let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-                let nodeData = jsonDict["nodes"] as? [[String: Any]] else {
-                    fatalError("Failed to parse JSON file")
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            if let jsonDict = jsonObject as? [String: Any] {
+                print(jsonDict)
+            } else if let jsonArray = jsonObject as? [[String: Any]] {
+                print(jsonArray)
+            } else {
+                print("Error parsing JSON file: unexpected root object")
             }
-            
-            var nodes: [SCNNode] = []
-            for nodeDatum in nodeData {
-                if let position = nodeDatum["position"] as? [Float],
-                    let color = nodeDatum["color"] as? [Float] {
-                    let node = SCNNode()
-                    node.position = SCNVector3(x: Float(position[0]), y: Float(position[1]), z: Float(position[2]))
-                    node.geometry = SCNSphere(radius: 0.1)
-                    node.geometry?.firstMaterial?.diffuse.contents = UIColor(red: CGFloat(color[0]), green: CGFloat(color[1]), blue: CGFloat(color[2]), alpha: 1.0)
-                    nodes.append(node)
-                }
-            }
-            
-            return nodes
         } catch {
-            fatalError("Failed to load JSON file: \(error)")
+            print("Error reading JSON file: \(error.localizedDescription)")
         }
     }
+
 }
