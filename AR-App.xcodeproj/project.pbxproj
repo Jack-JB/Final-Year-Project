@@ -16,6 +16,7 @@
 		045805842983F81200A7966D /* AR_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805832983F81200A7966D /* AR_AppUITests.swift */; };
 		045805862983F81200A7966D /* AR_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805852983F81200A7966D /* AR_AppUITestsLaunchTests.swift */; };
 		04684E3E299CEA5200F52EE6 /* ExpandingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */; };
+		0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0485F01A299D6E46009AD5CD /* JsonManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		045805832983F81200A7966D /* AR_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_AppUITests.swift; sourceTree = "<group>"; };
 		045805852983F81200A7966D /* AR_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingButton.swift; sourceTree = "<group>"; };
+		0485F01A299D6E46009AD5CD /* JsonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 				0458056A2983F81100A7966D /* Experience.rcproject */,
 				0458056C2983F81200A7966D /* Assets.xcassets */,
 				0458056E2983F81200A7966D /* Preview Content */,
+				0485F01A299D6E46009AD5CD /* JsonManager.swift */,
 			);
 			path = "AR-App";
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 			files = (
 				045805692983F81100A7966D /* ContentView.swift in Sources */,
 				045805672983F81100A7966D /* AppDelegate.swift in Sources */,
+				0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */,
 				0458056B2983F81100A7966D /* Experience.rcproject in Sources */,
 				04684E3E299CEA5200F52EE6 /* ExpandingButton.swift in Sources */,
 			);

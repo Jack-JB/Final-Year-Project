@@ -19,6 +19,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     var previousNode: SCNNode?
     var firstNode: SCNNode?
     var nodes: [SCNNode] = []
+    var rootNode = SCNNode()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +70,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear", for: .normal)
-        clearButton.frame = CGRect(x: 215, y: 800, width: 100, height: 44)
+        clearButton.frame = CGRect(x: 160, y: 800, width: 100, height: 44)
         clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
         clearButton.backgroundColor = .darkGray
         view.addSubview(clearButton)
@@ -77,7 +78,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Run the view's session
         sceneView.session.run(configuration)
     }
-  
+
     // MARK: - Touch even management
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
@@ -116,7 +117,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
         let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
         let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
-          
+          	
         var hitResult: ARRaycastResult
           
         if let horizontalHitResult = horizontalResults.first {
@@ -132,7 +133,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Create a new sphere node at the touch position
         createSphereNode(at: position, nodes: &nodes, previousNode: &previousNode)
     }
-    
+
+    // MARK: - Node Handler
     // This function creates the sphere nodes to allow the drawing within the app
     func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?) {
         let color = UIColor.red
@@ -140,6 +142,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // Create a new sphere node at the touch position
         let sphereNode = SCNNode()
+        
         sphereNode.geometry = SCNSphere(radius: 0.01)
         sphereNode.position = position
         
@@ -152,9 +155,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         }
         // Update the previous node to be the current sphere node for the next point
         nodes.append(sphereNode)
+        rootNode = sphereNode
         previousNode = sphereNode
     }
-    
+
     // TODO: Create a UI button to handle this function
     func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
         for node in nodes {
@@ -215,26 +219,56 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             return []
         }
 
-    @IBAction func loadButtonPressed(_ sender: Any) {
-            nodes = load()
-            for node in nodes {
-                sceneView.scene.rootNode.addChildNode(node)
+        @IBAction func loadButtonPressed(_ sender: UIButton) {
+            let fileName = "Nodes.json"
+            let jsonManager = JsonManager()
+
+            if let newNodes = jsonManager.loadNodesFromJSONFile(fileName: fileName) {
+                for node in newNodes {
+                    self.nodes.append(node)
+                    sceneView.scene.rootNode.addChildNode(node)
+                }
+                
+                print(self.nodes)
+                print("==============================")
+                print(newNodes)
+                let areEqual = areArraysEqual(newNodes, self.nodes)
+                print("==============================")
+                print("Equal arrays: \(areEqual)")
+                print("newNodes type is: \(getType(newNodes))")
+            } else {
+                // newNodes is nil, which means the JSON file could not be loaded
+                print("Error loading nodes from JSON file")
             }
         }
     
-    @IBAction func saveButtonPressed(_ sender: Any) {
-        save()
+    // Debugging purposes: Check if 2 arrays are equal
+    func areArraysEqual(_ array1: [SCNNode], _ array2: [SCNNode]) -> Bool {
+        return array1 == array2
     }
     
+    func getType<T>(_ array: [T]) -> String {
+        return "\(type(of: array))"
+    }
+
+    @IBAction func saveButtonPressed(_ sender: Any) {
+        //save()
+        let jsonManager = JsonManager()
+        let fileName = "Nodes.json"
+        let _ = jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: fileName)
+        
+        jsonManager.printJSONFileContents(fileName: fileName)
+    }
+
     @IBAction func clearButtonPressed(_ sender: Any) {
         clear()
     }
-    
+
     func removeNode(_ node: SCNNode) {
         node.removeFromParentNode()
         nodes = nodes.filter { $0 !== node }
     }
-    
+
     func clear() {
         for node in nodes {
             removeNode(node)
