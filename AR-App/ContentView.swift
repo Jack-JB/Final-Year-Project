@@ -225,10 +225,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
 
             if let newNodes = jsonManager.loadNodesFromJSONFile(fileName: fileName) {
                 for node in newNodes {
-                    self.nodes.append(node)
+                    //self.nodes.append(node)
                     sceneView.scene.rootNode.addChildNode(node)
                 }
-                
+                // Debugging statements
                 print(self.nodes)
                 print("==============================")
                 print(newNodes)
@@ -247,23 +247,21 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         return array1 == array2
     }
     
+    // Debugging purposes: Return the type of an array
     func getType<T>(_ array: [T]) -> String {
         return "\(type(of: array))"
     }
 
     @IBAction func saveButtonPressed(_ sender: Any) {
         //save()
-        let jsonManager = JsonManager()
-        let fileName = "Nodes.json"
-        let _ = jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: fileName)
         
-        jsonManager.printJSONFileContents(fileName: fileName)
     }
 
     @IBAction func clearButtonPressed(_ sender: Any) {
-        clear()
+        //clear()
+            
     }
-
+    
     func removeNode(_ node: SCNNode) {
         node.removeFromParentNode()
         nodes = nodes.filter { $0 !== node }
