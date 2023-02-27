@@ -1,80 +1,66 @@
-//
-//  CircleButton.swift
-//  AR-App
-//
-//  Created by Jack Burrows on 15/02/2023.
-//
-
-import Foundation
 import UIKit
 
-@IBDesignable
-class ExpandingButton: UIButton {
-    private var subButtons = [UIButton]()
-    private var isExpanded = false
-    private let stackView = UIStackView()
+class ExpandableButton: UIButton {
 
-    init(frame: CGRect, titles: [String]) {
+    var isExpanded: Bool = false
+    
+    var firstButton = UIButton()
+    var secondButton = UIButton()
+    var thirdButton = UIButton()
+
+    override init(frame: CGRect) {
         super.init(frame: frame)
-        setupViews(titles: titles)
+        addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        configureButtons()
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        setupViews(titles: [])
+        addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        configureButtons()
     }
 
-    private func setupViews(titles: [String]) {
-        self.layer.cornerRadius = self.frame.width / 2
-        self.clipsToBounds = true
-        self.backgroundColor = .blue
-        self.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+    private func configureButtons() {
+        // Set up the first button
+        firstButton.setTitle("Red", for: .normal)
+        firstButton.backgroundColor = .red
+        firstButton.isHidden = true
+        addSubview(firstButton)
 
-        // Create sub-buttons
-        for title in titles {
-            let button = UIButton(type: .custom)
-            button.setTitle(title, for: .normal)
-            button.backgroundColor = .gray
-            button.addTarget(self, action: #selector(subButtonTapped(sender:)), for: .touchUpInside)
-            button.isHidden = true
-            self.addSubview(button)
-            subButtons.append(button)
-        }
+        // Set up the second button
+        secondButton.setTitle("Blue", for: .normal)
+        secondButton.backgroundColor = .blue
+        secondButton.isHidden = true
+        addSubview(secondButton)
 
-        // Add sub-buttons to stack view
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.spacing = 10
-        for button in subButtons {
-            stackView.addArrangedSubview(button)
-        }
-        self.addSubview(stackView)
+        // Set up the third button
+        thirdButton.setTitle("Green", for: .normal)
+        thirdButton.backgroundColor = .green
+        thirdButton.isHidden = true
+        addSubview(thirdButton)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
-        // Position stack view
-        stackView.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: CGFloat(subButtons.count * 40))
-        stackView.center = CGPoint(x: self.frame.width / 2, y: -CGFloat(subButtons.count * 20))
+        
+        // Set the frames of the buttons
+        let buttonSize = CGSize(width: 100, height: 50)
+        let buttonX = frame.width - buttonSize.width - (-100) // adjust the value of 20 as needed
+        firstButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height * 3), size: buttonSize)
+        secondButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height * 2), size: buttonSize)
+        thirdButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height), size: buttonSize)
     }
 
-    @objc func buttonTapped() {
-        isExpanded = !isExpanded
-
-        // Show/hide sub-buttons
-        for i in 0..<subButtons.count {
-            subButtons[i].isHidden = !isExpanded
+    @objc private func didTapButton() {
+        // Toggle the isExpanded property
+        isExpanded.toggle()
+        
+        // Show or hide the buttons based on isExpanded
+        UIView.animate(withDuration: 0.3) {
+            self.firstButton.isHidden = !self.isExpanded
+            self.secondButton.isHidden = !self.isExpanded
+            self.thirdButton.isHidden = !self.isExpanded
         }
-
-        // Animate button rotation
-        let angle = isExpanded ? CGFloat.pi / 4 : 0
-        UIView.animate(withDuration: 0.25, animations: {
-            self.transform = CGAffineTransform(rotationAngle: angle)
-        })
-    }
-
-    @objc func subButtonTapped(sender: UIButton) {
-        // Handle sub-button tap
     }
 }
+
