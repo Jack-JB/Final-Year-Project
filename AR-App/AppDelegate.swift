@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
     // Create a new instance of ARViewController
-    let arViewController = MenuViewController() //ARViewController()
+    let arViewController = ARViewController() //MenuViewController()
     
     // Create a new UIWindow with the same frame as the device's screen
     window = UIWindow(frame: UIScreen.main.bounds)

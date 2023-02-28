@@ -8,7 +8,6 @@
 import Foundation
 import SceneKit
 
-
 class JsonManager {
     private let fileManager = FileManager.default
     

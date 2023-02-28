@@ -11,7 +11,7 @@ import UIKit
 import ARKit
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
-  
+
     // MARK: - Class Properties
   
     @IBOutlet var sceneView: ARSCNView!
@@ -41,6 +41,12 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // Make the view controller the first responder
         becomeFirstResponder()
+        
+        let expandableButton = ExpandableButton(frame: CGRect(x: 50, y: 700, width: 150, height: 50))
+                expandableButton.setTitle("Change Colour", for: .normal)
+                expandableButton.backgroundColor = .gray
+                
+                view.addSubview(expandableButton)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,6 +59,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         configuration.planeDetection = [.horizontal]
         
         // MARK: - UI component declaration
+        
+        let expandableButton = ExpandableButton(frame: CGRect(x: 310, y: 100, width: 150, height: 50))
+        view.addSubview(expandableButton)
+
         
         let saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
@@ -68,7 +78,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         loadButton.backgroundColor = .darkGray
         view.addSubview(loadButton)
         
-        let clearButton = UIButton(type: .system)
+       let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear", for: .normal)
         clearButton.frame = CGRect(x: 160, y: 800, width: 100, height: 44)
         clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
@@ -113,13 +123,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
         let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
         let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
-          
-        // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
+        
+        // Create a raycast query from the touch location, allowing estimated planes and aligning with vertical planes
         let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
         let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
-          	
+        
         var hitResult: ARRaycastResult
-          
+        
         if let horizontalHitResult = horizontalResults.first {
             hitResult = horizontalHitResult
         } else if let verticalHitResult = verticalResults.first {
@@ -137,8 +147,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - Node Handler
     // This function creates the sphere nodes to allow the drawing within the app
     func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?) {
-        let color = UIColor.red
-        changeNodeColour(nodes, color: color)
         
         // Create a new sphere node at the touch position
         let sphereNode = SCNNode()
@@ -206,9 +214,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 // Check if the decoded nodes array is not nil
                 if let decodedNodes = decodedNodes {
                     // Return the decoded nodes array
-                    for node in decodedNodes {
-                            print(node)
-                        }
                     return decodedNodes
                 } else {
                     print("Error loading scene")
@@ -222,24 +227,20 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         @IBAction func loadButtonPressed(_ sender: UIButton) {
             let fileName = "Nodes.json"
             let jsonManager = JsonManager()
-
-            if let newNodes = jsonManager.loadNodesFromJSONFile(fileName: fileName) {
-                for node in newNodes {
-                    //self.nodes.append(node)
-                    sceneView.scene.rootNode.addChildNode(node)
-                }
-                // Debugging statements
-                print(self.nodes)
-                print("==============================")
-                print(newNodes)
-                let areEqual = areArraysEqual(newNodes, self.nodes)
-                print("==============================")
-                print("Equal arrays: \(areEqual)")
-                print("newNodes type is: \(getType(newNodes))")
-            } else {
-                // newNodes is nil, which means the JSON file could not be loaded
-                print("Error loading nodes from JSON file")
+            
+            nodes = jsonManager.loadNodesFromJSONFile(fileName: fileName)!
+            for node in nodes {
+                node.geometry = SCNSphere(radius: 0.01)
+                sceneView.scene.rootNode.addChildNode(node)
             }
+            
+            print(nodes)
+            
+            // To load as an array
+            //nodes = load()
+            //for node in nodes {
+            //    sceneView.scene.rootNode.addChildNode(node)
+            //}
         }
     
     // Debugging purposes: Check if 2 arrays are equal
@@ -251,16 +252,21 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     func getType<T>(_ array: [T]) -> String {
         return "\(type(of: array))"
     }
-
+    
     @IBAction func saveButtonPressed(_ sender: Any) {
         //save()
-        
+        let jsonObj = JsonManager()
+        jsonObj.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
     }
 
     @IBAction func clearButtonPressed(_ sender: Any) {
-        //clear()
+        clear()
             
     }
+    
+    @objc func didTapFirstButton() {
+        changeNodeColour(nodes, color: UIColor.blue)
+        }
     
     func removeNode(_ node: SCNNode) {
         node.removeFromParentNode()
@@ -268,8 +274,25 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
 
     func clear() {
+        print(nodes)
         for node in nodes {
             removeNode(node)
         }
+        //deleteJSONFile(fileName: "Nodes.json")
+        print("clear nodes: ", nodes)
     }
+    
+    func deleteJSONFile(fileName: String) {
+        let fileManager = FileManager.default
+        guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        let fileURL = documentsURL.appendingPathComponent(fileName)
+        do {
+            try fileManager.removeItem(at: fileURL)
+        } catch let error {
+            print("Error deleting JSON file: \(error.localizedDescription)")
+        }
+    }
+
 }

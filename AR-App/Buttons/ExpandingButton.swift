@@ -19,7 +19,6 @@ class ExpandableButton: UIButton {
         addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         configureButtons()
     }
-
     private func configureButtons() {
         // Set up the first button
         firstButton.setTitle("Red", for: .normal)
@@ -63,4 +62,3 @@ class ExpandableButton: UIButton {
         }
     }
 }
-

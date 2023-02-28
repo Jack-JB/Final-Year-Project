@@ -104,11 +104,11 @@
 		045805652983F81100A7966D /* AR-App */ = {
 			isa = PBXGroup;
 			children = (
-				0467D6EF29A5009500D1A57C /* Views */,
-				04684E3C299CEA3500F52EE6 /* Buttons */,
 				045805662983F81100A7966D /* AppDelegate.swift */,
-				0467D6F029A5012800D1A57C /* Utilities */,
 				045805682983F81100A7966D /* ContentView.swift */,
+				04684E3C299CEA3500F52EE6 /* Buttons */,
+				0467D6EF29A5009500D1A57C /* Views */,
+				0467D6F029A5012800D1A57C /* Utilities */,
 				0458056A2983F81100A7966D /* Experience.rcproject */,
 				0458056C2983F81200A7966D /* Assets.xcassets */,
 				0458056E2983F81200A7966D /* Preview Content */,
