@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Make the window visible
     window?.makeKeyAndVisible()
+    
+    // Implement Firebase
+    FirebaseApp.configure()
     
     return true
   }
