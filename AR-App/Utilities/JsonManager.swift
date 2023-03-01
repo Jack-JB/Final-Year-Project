@@ -170,4 +170,66 @@ class JsonManager {
             return nil
         }
     }
+    
+    func loadNodesFromJSONData(jsonData: Data) -> [SCNNode]? {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+            guard let nodesArray = jsonObject?["nodes"] as? [[String: Any]] else {
+                print("Error parsing JSON data: 'nodes' key not found or value is not an array")
+                return nil
+            }
+            
+            var sceneNodes: [SCNNode] = []
+            
+            for nodeData in nodesArray {
+                let node = SCNNode()
+                node.name = nodeData["name"] as? String ?? "node"
+                if let positionData = nodeData["position"] as? [String: Any],
+                   let x = positionData["x"] as? Float,
+                   let y = positionData["y"] as? Float,
+                   let z = positionData["z"] as? Float {
+                    node.position = SCNVector3(x, y, z)
+                }
+                if let scaleData = nodeData["scale"] as? [String: Any],
+                   let x = scaleData["x"] as? Float,
+                   let y = scaleData["y"] as? Float,
+                   let z = scaleData["z"] as? Float {
+                    node.scale = SCNVector3(x, y, z)
+                }
+                if let rotationData = nodeData["rotation"] as? [String: Any],
+                   let x = rotationData["x"] as? Float,
+                   let y = rotationData["y"] as? Float,
+                   let z = rotationData["z"] as? Float,
+                   let w = rotationData["w"] as? Float {
+                    node.orientation = SCNQuaternion(x, y, z, w)
+                }
+                if let colorData = nodeData["color"] as? [String: Any],
+                   let r = colorData["r"] as? CGFloat,
+                   let g = colorData["g"] as? CGFloat,
+                   let b = colorData["b"] as? CGFloat {
+                    node.geometry?.firstMaterial?.diffuse.contents = UIColor(red: r, green: g, blue: b, alpha: 1.0)
+                }
+                sceneNodes.append(node)
+            }
+            
+            // Check if there are any nodes
+            guard sceneNodes.count > 0 else {
+                print("Error parsing JSON data: no nodes found")
+                return nil
+            }
+            
+            // If the root node is not named "node", rename it to "node"
+            let rootNode = sceneNodes[0]
+            if rootNode.name != "node" {
+                rootNode.name = "node"
+            }
+            
+            return sceneNodes
+        } catch {
+            print("Error loading JSON data: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+
 }
