@@ -8,17 +8,24 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    let buildNumber = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+    
     var body: some View {
         NavigationView {
             VStack {
                 Text("Welcome to the AR App!")
                     .font(.title)
-                    .padding()
+                    .frame(maxHeight: .infinity)
                 VStack {
                     NavigationLink(destination: ARView()) {
                         StartButton(text: "Start Solo AR Experience")
                     }
                     StartButton(text: "Start group AR Experience")
+                    
+                    Text("App Build Version: \(buildNumber!)")
+                        .frame(maxHeight: .infinity, alignment: .bottomTrailing)
+                        .font(.system(size:15))
                 }
             }
         }
