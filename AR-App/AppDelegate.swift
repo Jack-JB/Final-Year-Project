@@ -13,7 +13,7 @@ import FirebaseCore
 struct MyApp: App {
     var body: some Scene {
         WindowGroup {
-            MenuList()
+            HomeView()
         }
     }
 }
@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
     // Set up the SwiftUI view
-    let contentView = MenuList()
+    let contentView = HomeView()
 
     // Create a UIWindow and set the root view controller to a UIHostingController
     let window = UIWindow(frame: UIScreen.main.bounds)

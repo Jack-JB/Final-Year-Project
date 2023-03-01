@@ -7,19 +7,18 @@
 
 import SwiftUI
 
-struct MenuList: View {
+struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack {
                 Text("Welcome to the AR App!")
                     .font(.title)
                     .padding()
-                NavigationLink(destination: ARView()) {
-                    VStack{
+                VStack {
+                    NavigationLink(destination: ARView()) {
                         StartButton(text: "Start Solo AR Experience")
-                            .padding(10)
-                        StartButton(text: "Start Group AR Experience")
                     }
+                    StartButton(text: "Start group AR Experience")
                 }
             }
         }
@@ -39,7 +38,7 @@ struct ARView: UIViewControllerRepresentable {
 #if DEBUG
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
-        MenuList()
+        HomeView()
     }
 }
 #endif
