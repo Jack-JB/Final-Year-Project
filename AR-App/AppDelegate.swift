@@ -10,23 +10,28 @@ import SwiftUI
 import FirebaseCore
 
 @main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            MenuList()
+        }
+    }
+}
+
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
   var window: UIWindow?
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-    // Create a new instance of ARViewController
-    let arViewController = ARViewController() //MenuViewController()
-    
-    // Create a new UIWindow with the same frame as the device's screen
-    window = UIWindow(frame: UIScreen.main.bounds)
-    
-    // Set the ARViewController as the root view controller of the window
-    window?.rootViewController = arViewController
-    
-    // Make the window visible
-    window?.makeKeyAndVisible()
+    // Set up the SwiftUI view
+    let contentView = MenuList()
+
+    // Create a UIWindow and set the root view controller to a UIHostingController
+    let window = UIWindow(frame: UIScreen.main.bounds)
+    window.rootViewController = UIHostingController(rootView: contentView)
+    window.makeKeyAndVisible()
+
     
     // Implement Firebase
     FirebaseApp.configure()
