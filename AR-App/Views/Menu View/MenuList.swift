@@ -15,12 +15,11 @@ struct MenuList: View {
                     .font(.title)
                     .padding()
                 NavigationLink(destination: ARView()) {
-                    Text("Start AR Experience")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
+                    VStack{
+                        StartButton(text: "Start Solo AR Experience")
+                            .padding(10)
+                        StartButton(text: "Start Group AR Experience")
+                    }
                 }
             }
         }

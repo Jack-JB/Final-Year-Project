@@ -27,9 +27,12 @@
 		0462613229AE7D0800AD9935 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0462613129AE7D0800AD9935 /* FirebaseFirestoreSwift */; };
 		0462613429AE7D0800AD9935 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0462613329AE7D0800AD9935 /* FirebaseFunctions */; };
 		0462613629AE7D0800AD9935 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0462613529AE7D0800AD9935 /* FirebaseStorage */; };
+		0462613829AE802900AD9935 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0462613729AE802900AD9935 /* FirebaseManager.swift */; };
 		0467D6EE29A4EC3C00D1A57C /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0467D6ED29A4EC3C00D1A57C /* MenuViewController.swift */; };
 		04684E3E299CEA5200F52EE6 /* ExpandingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */; };
 		0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0485F01A299D6E46009AD5CD /* JsonManager.swift */; };
+		048CA0D929AF5C4600AAB944 /* MenuList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0D829AF5C4600AAB944 /* MenuList.swift */; };
+		048CA0F929AF706700AAB944 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0F829AF706700AAB944 /* StartButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,9 +66,12 @@
 		045805832983F81200A7966D /* AR_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_AppUITests.swift; sourceTree = "<group>"; };
 		045805852983F81200A7966D /* AR_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		0462612029AE7B8C00AD9935 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0462613729AE802900AD9935 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		0467D6ED29A4EC3C00D1A57C /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingButton.swift; sourceTree = "<group>"; };
 		0485F01A299D6E46009AD5CD /* JsonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonManager.swift; sourceTree = "<group>"; };
+		048CA0D829AF5C4600AAB944 /* MenuList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuList.swift; sourceTree = "<group>"; };
+		048CA0F829AF706700AAB944 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +173,7 @@
 		0467D6EF29A5009500D1A57C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				048CA0F629AF703A00AAB944 /* Menu View */,
 				0467D6ED29A4EC3C00D1A57C /* MenuViewController.swift */,
 				043177E129A63E7800200C8B /* NavigationController.swift */,
 			);
@@ -177,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				0485F01A299D6E46009AD5CD /* JsonManager.swift */,
+				0462613729AE802900AD9935 /* FirebaseManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -187,6 +195,15 @@
 				04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */,
 			);
 			path = Buttons;
+			sourceTree = "<group>";
+		};
+		048CA0F629AF703A00AAB944 /* Menu View */ = {
+			isa = PBXGroup;
+			children = (
+				048CA0D829AF5C4600AAB944 /* MenuList.swift */,
+				048CA0F829AF706700AAB944 /* StartButton.swift */,
+			);
+			path = "Menu View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -337,10 +354,13 @@
 			files = (
 				045805692983F81100A7966D /* ContentView.swift in Sources */,
 				0467D6EE29A4EC3C00D1A57C /* MenuViewController.swift in Sources */,
+				048CA0F929AF706700AAB944 /* StartButton.swift in Sources */,
 				045805672983F81100A7966D /* AppDelegate.swift in Sources */,
 				0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */,
+				0462613829AE802900AD9935 /* FirebaseManager.swift in Sources */,
 				0458056B2983F81100A7966D /* Experience.rcproject in Sources */,
 				043177E229A63E7800200C8B /* NavigationController.swift in Sources */,
+				048CA0D929AF5C4600AAB944 /* MenuList.swift in Sources */,
 				04684E3E299CEA5200F52EE6 /* ExpandingButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
