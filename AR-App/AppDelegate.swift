@@ -11,6 +11,11 @@ import FirebaseCore
 
 @main
 struct MyApp: App {
+  
+  init() {
+    // Implement Firebase
+    FirebaseApp.configure()
+  }
     var body: some Scene {
         WindowGroup {
             HomeView()
@@ -23,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+    
     // Set up the SwiftUI view
     let contentView = HomeView()
 
@@ -33,8 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window.makeKeyAndVisible()
 
     
-    // Implement Firebase
-    FirebaseApp.configure()
     
     return true
   }
