@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04149D2A29B5F28600828DE8 /* SoloView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04149D2929B5F28600828DE8 /* SoloView.swift */; };
 		045805672983F81100A7966D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805662983F81100A7966D /* AppDelegate.swift */; };
 		045805692983F81100A7966D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805682983F81100A7966D /* ContentView.swift */; };
 		0458056D2983F81200A7966D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0458056C2983F81200A7966D /* Assets.xcassets */; };
@@ -31,6 +32,7 @@
 		048CA0D929AF5C4600AAB944 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0D829AF5C4600AAB944 /* HomeView.swift */; };
 		048CA0F929AF706700AAB944 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0F829AF706700AAB944 /* StartButton.swift */; };
 		048CA0FB29AF783300AAB944 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0FA29AF783300AAB944 /* Menu.swift */; };
+		04E8748B29B20EA500E1CF4F /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E8748A29B20EA500E1CF4F /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04149D2929B5F28600828DE8 /* SoloView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoloView.swift; sourceTree = "<group>"; };
 		045805632983F81100A7966D /* AR-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		045805662983F81100A7966D /* AppDelegate.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; tabWidth = 2; };
 		045805682983F81100A7966D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,6 +71,7 @@
 		048CA0D829AF5C4600AAB944 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		048CA0F829AF706700AAB944 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		048CA0FA29AF783300AAB944 /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		04E8748A29B20EA500E1CF4F /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +174,8 @@
 			children = (
 				048CA0F629AF703A00AAB944 /* Home View */,
 				048CA0FA29AF783300AAB944 /* Menu.swift */,
+				04E8748A29B20EA500E1CF4F /* MenuViewController.swift */,
+				04149D2929B5F28600828DE8 /* SoloView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -350,6 +356,8 @@
 				048CA0F929AF706700AAB944 /* StartButton.swift in Sources */,
 				045805672983F81100A7966D /* AppDelegate.swift in Sources */,
 				0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */,
+				04E8748B29B20EA500E1CF4F /* MenuViewController.swift in Sources */,
+				04149D2A29B5F28600828DE8 /* SoloView.swift in Sources */,
 				048CA0FB29AF783300AAB944 /* Menu.swift in Sources */,
 				0462613829AE802900AD9935 /* FirebaseManager.swift in Sources */,
 				048CA0D929AF5C4600AAB944 /* HomeView.swift in Sources */,
