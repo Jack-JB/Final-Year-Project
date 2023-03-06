@@ -361,5 +361,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             print("Error deleting JSON file: \(error.localizedDescription)")
         }
     }
-
+    
+    @IBAction func showMenuButtonPressed(_ sender: UIButton) {
+            let myMenuView = MenuView()
+            let hostingController = UIHostingController(rootView: myMenuView)
+            present(hostingController, animated: true, completion: nil)
+        }
 }
