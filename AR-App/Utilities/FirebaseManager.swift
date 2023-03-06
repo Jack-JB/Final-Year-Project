@@ -10,17 +10,18 @@ import Firebase
 
 class FirebaseManager {
     
-    func sendJSONDataToFirestore(data: [String: Any], collectionName: String) {
+    func sendJSONDataToFirestore(data: [String: Any], collectionName: String, documentName: String) {
         let db = Firestore.firestore()
-        var ref: DocumentReference? = nil
-        ref = db.collection(collectionName).addDocument(data: data) { error in
+        let docRef = db.collection(collectionName).document(documentName)
+        docRef.setData(data) { error in
             if let error = error {
                 print("Error adding document: \(error.localizedDescription)")
             } else {
-                print("Document added with ID: \(ref!.documentID)")
+                print("Document added with ID: \(docRef.documentID)")
             }
         }
     }
+
     
     func getDataFromFirestoreById(documentId: String, collectionName: String, completion: @escaping (_ data: [String: Any]?, _ error: Error?) -> Void) {
         let db = Firestore.firestore()
@@ -36,6 +37,25 @@ class FirebaseManager {
             } else {
                 // Document not found or error occurred
                 completion(nil, error)
+            }
+        }
+    }
+    
+    func loadData(completion: @escaping (Result<[DocumentSnapshot], Error>) -> Void) {
+        let db = Firestore.firestore()
+        let collectionRef = db.collection("myCollection")
+        
+        collectionRef.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                if let querySnapshot = querySnapshot {
+                    let documents = querySnapshot.documents
+                    completion(.success(documents))
+                } else {
+                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "No documents found"])
+                    completion(.failure(error))
+                }
             }
         }
     }
