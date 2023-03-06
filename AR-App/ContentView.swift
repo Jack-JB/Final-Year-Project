@@ -66,22 +66,22 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         let saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
-        saveButton.frame = CGRect(x: 20, y: 800, width: 100, height: 44)
+        saveButton.frame = CGRect(x: 20, y: 750, width: 100, height: 44)
         saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
         saveButton.backgroundColor = .darkGray
         view.addSubview(saveButton)
         
         let loadButton = UIButton(type: .system)
         loadButton.setTitle("Load", for: .normal)
-        loadButton.frame = CGRect(x: 310, y: 800, width: 100, height: 44)
+        loadButton.frame = CGRect(x: 310, y: 750, width: 100, height: 44)
         loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
         loadButton.backgroundColor = .darkGray
         view.addSubview(loadButton)
         
        let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear", for: .normal)
-        clearButton.frame = CGRect(x: 160, y: 800, width: 100, height: 44)
-        clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
+        clearButton.frame = CGRect(x: 160, y: 750, width: 100, height: 44)
+        clearButton.addTarget(self, action: #selector(showMenuButtonPressed), for: .touchUpInside)
         clearButton.backgroundColor = .darkGray
         view.addSubview(clearButton)
 
@@ -141,29 +141,27 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
           
         // Create a new sphere node at the touch position
-        createSphereNode(at: position, nodes: &nodes, previousNode: &previousNode)
+        createSphereNode(at: position, nodes: &nodes, previousNode: &previousNode, rootNode: sceneView.scene.rootNode)
     }
 
     // MARK: - Node Handler
     // This function creates the sphere nodes to allow the drawing within the app
-    func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?) {
-        
+    func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?, rootNode: SCNNode) {
+            
         // Create a new sphere node at the touch position
         let sphereNode = SCNNode()
-        
+            
         sphereNode.geometry = SCNSphere(radius: 0.01)
         sphereNode.position = position
-        
-        // Add the sphere node to the scene
-        sceneView.scene.rootNode.addChildNode(sphereNode)
-        
+            
+        // Add the sphere node to the parent node
+        rootNode.addChildNode(sphereNode)
+            
         // If this is not the first point in the drawing, connect the current point with the previous point using a line
-        if previousNode != nil {
-            sceneView.scene.rootNode.addChildNode(sphereNode)
-        }
+       
+            
         // Update the previous node to be the current sphere node for the next point
         nodes.append(sphereNode)
-        rootNode = sphereNode
         previousNode = sphereNode
     }
 
@@ -315,12 +313,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
 
     func clear() {
-        print(nodes)
         for node in nodes {
             removeNode(node)
         }
-        //deleteJSONFile(fileName: "Nodes.json")
-        print("clear nodes: ", nodes)
+        
+        rootNode.removeAllActions()
+        rootNode.removeAllAnimations()
+        rootNode.enumerateChildNodes { (node, _) in
+            node.removeFromParentNode()
+        }
     }
     
     func deleteJSONFile(fileName: String) {
