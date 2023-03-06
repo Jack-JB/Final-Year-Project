@@ -225,21 +225,46 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         @IBAction func loadButtonPressed(_ sender: UIButton) {
             let fileName = "Nodes.json"
             let jsonManager = JsonManager()
-            
-            nodes = jsonManager.loadNodesFromJSONFile(fileName: fileName)!
+            let firebaseManager = FirebaseManager()
+           
+            // current parameter used as placeholder for testing
+            loadData(documentId: "tree")
+            print(nodes)
+           /* nodes = jsonManager.loadNodesFromJSONFile(fileName: fileName)!
             for node in nodes {
                 node.geometry = SCNSphere(radius: 0.01)
                 sceneView.scene.rootNode.addChildNode(node)
-            }
-            
-            print(nodes)
-            
-            // To load as an array
-            //nodes = load()
-            //for node in nodes {
-            //    sceneView.scene.rootNode.addChildNode(node)
-            //}
+            } */
         }
+    
+    func loadData(documentId: String) {
+        let firebaseManager = FirebaseManager()
+        let jsonManager = JsonManager()
+        
+        firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { [self] data, error in
+             if let data = data {
+                 // Process the data here
+                 do {
+                     let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                     nodes = jsonManager.loadNodesFromJSONData(jsonData: jsonData)!
+                     
+                     for node in nodes {
+                         node.geometry = SCNSphere(radius: 0.01)
+                         sceneView.scene.rootNode.addChildNode(node)
+                     }
+                     // Use the jsonData here
+                 } catch {
+                     // Handle the error here
+                     print(error.localizedDescription)
+                 }
+                 
+                 //print(data)
+             } else {
+                 // Handle the error
+                 print(error?.localizedDescription ?? "Unknown error")
+             }
+         }
+    }
     
     // Debugging purposes: Check if 2 arrays are equal
     func areArraysEqual(_ array1: [SCNNode], _ array2: [SCNNode]) -> Bool {
