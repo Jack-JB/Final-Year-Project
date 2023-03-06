@@ -9,34 +9,53 @@ import SwiftUI
 import Firebase
 import FirebaseCore
 
-struct Element: View {
-
-    var text: String
+struct DocumentRowView: View {
+    let icon: Image
+    let documentID: String
+    let onTap: () -> Void
     
     var body: some View {
         HStack {
-            Image(systemName: "scribble.variable")
-                .font(.system(size: 24))
-                .foregroundColor(.black)
-                .padding(.trailing, 10)
-            Text(text)
+            icon
+            Text(documentID)
+        }
+        .onTapGesture {
+            onTap()
         }
     }
 }
 
 struct MenuView: View {
-
+    
+    let firebaseManager = FirebaseManager()
+    let arViewController = ARViewController()
+    @State var documents: [DocumentSnapshot] = []
+    
     var body: some View {
         NavigationView {
-            List{
-                Element(text: "Drawing 1")
-                Element(text: "Drawing 2")
-                Element(text: "Drawing 3")
-                Element(text: "Drawing 4")
+            List(documents, id: \.documentID) { document in
+                DocumentRowView(icon: Image(systemName: "scribble.variable"),
+                                documentID: document.documentID,
+                                onTap: {
+                                    arViewController.loadData(documentId: document.documentID)
+                                })
             }
-        }.navigationTitle("Drawing List")
+            .onAppear {
+                firebaseManager.loadData { result in
+                    switch result {
+                    case .success(let documents):
+                        self.documents = documents
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+            }
+            .navigationTitle("Drawings")
+        }
     }
 }
+
+
 
 struct Menu_Previews: PreviewProvider {
     static var previews: some View {
