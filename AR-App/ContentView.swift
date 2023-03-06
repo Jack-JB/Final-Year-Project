@@ -254,10 +254,51 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction func saveButtonPressed(_ sender: Any) {
-        //save()
-        let jsonObj = JsonManager()
-        jsonObj.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
+        let jsonManager = JsonManager()
+        jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
+        
+        let firebaseManager = FirebaseManager()
+        
+        // Create an alert controller with a text field for entering the document name
+        let alertController = UIAlertController(title: "Save Drawing", message: "Enter a name for your drawing:", preferredStyle: .alert)
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Drawing Name"
+        }
+        
+        // Add save and cancel actions to the alert controller
+        let saveAction = UIAlertAction(title: "Save", style: .default) { (action) in
+            // Get the text entered in the text field and use it as the document name
+            guard let drawingName = alertController.textFields?.first?.text, !drawingName.isEmpty else {
+                // Show an error message if no name was entered
+                self.showErrorMessage(message: "Please enter a name for your drawing.")
+                return
+            }
+            
+            let collectionName = "myCollection"
+            
+            let jsonString = JsonManager().nodesToJSON(nodes: self.nodes)
+            let jsonData = jsonString!.data(using: .utf8)!
+            let serialisedJson = try! JSONSerialization.jsonObject(with: jsonData, options: []) as! [String: Any]
+            
+            // Send the JSON data to Firestore using the drawing name as the document ID
+            firebaseManager.sendJSONDataToFirestore(data: serialisedJson, collectionName: collectionName, documentName: drawingName)
+        }
+        alertController.addAction(saveAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        // Present the alert controller
+        present(alertController, animated: true, completion: nil)
     }
+
+    func showErrorMessage(message: String) {
+        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+
 
     @IBAction func clearButtonPressed(_ sender: Any) {
         clear()
