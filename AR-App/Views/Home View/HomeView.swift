@@ -21,7 +21,7 @@ struct HomeView: View {
                     NavigationLink(destination: ARView()) {
                         StartButton(text: "Start Solo AR Experience")
                     }
-                    StartButton(text: "Start group AR Experience")
+                    StartButton(text: "Start Group AR Experience")
                     
                     Text("App Build Version: \(buildNumber!)")
                         .frame(maxHeight: .infinity, alignment: .bottomTrailing)
