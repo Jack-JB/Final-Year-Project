@@ -150,12 +150,45 @@ class JsonManagerTests: XCTestCase {
         XCTAssertEqual(positionData["z"] as? Float, 3, "Node z position is incorrect")
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
+    func testNodesToJSON() {
+        
+        // ARRANGE:
+        // Create a SCNNode object
+        let node1 = SCNNode()
+        node1.name = "Node 1"
+        node1.position = SCNVector3(x: 1.0, y: 2.0, z: 3.0)
+        node1.scale = SCNVector3(x: 0.5, y: 0.5, z: 0.5)
+        node1.rotation = SCNVector4(x: 0.0, y: 1.0, z: 0.0, w: 1.0)
+        let material = SCNMaterial()
+        material.diffuse.contents = SCNVector3(x: 0.5, y: 0.5, z: 0.5)
+        let geometry = SCNBox(width: 1.0, height: 1.0, length: 1.0, chamferRadius: 0.0)
+        geometry.materials = [material]
+        node1.geometry = geometry
+        
+        // ACT:
+        // Call the function and get the result
+        let result = jsonManager.nodesToJSON(nodes: [node1])
+        
+        // ASSERT:
+        // Assert that the result is not nil
+        XCTAssertNotNil(result, "Result should not be nil")
+        
+        // Convert the result back to a dictionary for easier checking
+        guard let jsonString = result,
+              let data = jsonString.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+              let nodesArray = json["nodes"] as? [[String: Any]] else {
+                  XCTFail("Result should be a valid JSON string")
+                  return
+              }
 
+        // Assert that the nodes array contains one dictionary
+        XCTAssertEqual(nodesArray.count, 1, "Nodes array should contain one dictionary")
+        
+        // Assert that the dictionary has the correct keys and values
+        let node1Dict = nodesArray[0]
+        XCTAssertEqual(node1Dict["name"] as? String, "Node 1", "Node 1 name should be 'Node 1'")
+        XCTAssertEqual(node1Dict["position"] as? [String: Double], ["x": 1.0, "y": 2.0, "z": 3.0], "Node 1 position should be {x: 1.0, y: 2.0, z: 3.0}")
+        XCTAssertEqual(node1Dict["scale"] as? [String: Double], ["x": 0.5, "y": 0.5, "z": 0.5], "Node 1 scale should be {x: 0.5, y: 0.5, z: 0.5}")
+    }
 }
-*/
