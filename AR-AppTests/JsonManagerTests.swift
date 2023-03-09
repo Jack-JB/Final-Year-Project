@@ -8,10 +8,10 @@
 import XCTest
 import Firebase
 import SceneKit
+import XCTest
+
 
 @testable import AR_App
-
-import XCTest
 
 
 class JsonManagerTests: XCTestCase {
@@ -20,6 +20,8 @@ class JsonManagerTests: XCTestCase {
     var fileName: String!
     var fileURL: URL!
     
+    
+    // Function called first, sets up the test environment
     override func setUp() {
         super.setUp()
         jsonManager = JsonManager()
@@ -28,23 +30,30 @@ class JsonManagerTests: XCTestCase {
         fileURL = documentsDirectory.appendingPathComponent(fileName)
         
         let testData = [
-            ["name": "John", "age": 30],
-            ["name": "Jane", "age": 25]
+            ["name": "Jack", "age": 28],
+            ["name": "Helena", "age": 28]
         ]
         let jsonData = try! JSONSerialization.data(withJSONObject: testData, options: [])
         FileManager.default.createFile(atPath: fileURL.path, contents: jsonData, attributes: nil)
     }
     
+    // Function called last to end the test environment and remove any testing files/data created during testing
     override func tearDown() {
         try! FileManager.default.removeItem(at: fileURL)
         super.tearDown()
     }
     
+    // Tests that testPrintJSONFileContents does not throw any errors
     func testPrintJSONFileContents() {
-        // Act
+        // ARRANGE:
+        // Arrange not required, as it is all located within setUp()
+        
+        // ACT:
         jsonManager.printJSONFileContents(fileName: fileName)
         
-        // Assert
+        // ASSERT:
+        // There is nothing to assert with the output of this function as it only prints to the console,
+        // so this test will just test for any errors thrown.
         XCTAssertNoThrow(try jsonManager.printJSONFileContents(fileName: fileName))
     }
     
