@@ -98,24 +98,20 @@ class JsonManagerTests: XCTestCase {
         XCTAssertEqual(result!.count, expectedNodesCount)
         XCTAssertEqual(result![0].name, expectedNodeName)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
     
     func testSaveNodesAsJSONFile() {
-        // ARRANGE
+        
+        // ARRANGE:
         // Create a test SCNNode
         let testNode = SCNNode(geometry: SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0))
         testNode.name = "testNode"
         testNode.position = SCNVector3(1, 2, 3)
         
-        // Save the test node to a JSON file
-        let fileName = "testFile.json"
+        
+        // ACT:
         let saved = jsonManager.saveNodesAsJSONFile(nodes: [testNode], fileName: fileName)
+        
+        // ASSERT:
         XCTAssertTrue(saved, "Failed to save JSON file")
         
         // Read the contents of the saved JSON file
