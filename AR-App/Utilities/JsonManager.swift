@@ -103,6 +103,22 @@ class JsonManager {
         }
     }
     
+    func printJSONData(jsonData: Data) {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            if let jsonDict = jsonObject as? [String: Any] {
+                print(jsonDict)
+            } else if let jsonArray = jsonObject as? [[String: Any]] {
+                print(jsonArray)
+            } else {
+                print("Error parsing JSON data: unexpected root object")
+            }
+        } catch {
+            print("Error reading JSON data: \(error.localizedDescription)")
+        }
+    }
+
+    
     func loadNodesFromJSONFile(fileName: String) -> [SCNNode]? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Error getting documents directory")
@@ -231,5 +247,16 @@ class JsonManager {
         }
     }
 
-
+    func deleteJSONFile(fileName: String) {
+        let fileManager = FileManager.default
+        guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        let fileURL = documentsURL.appendingPathComponent(fileName)
+        do {
+            try fileManager.removeItem(at: fileURL)
+        } catch let error {
+            print("Error deleting JSON file: \(error.localizedDescription)")
+        }
+    }
 }
