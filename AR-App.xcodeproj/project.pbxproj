@@ -32,6 +32,9 @@
 		048CA0D929AF5C4600AAB944 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0D829AF5C4600AAB944 /* HomeView.swift */; };
 		048CA0F929AF706700AAB944 /* StartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0F829AF706700AAB944 /* StartButton.swift */; };
 		048CA0FB29AF783300AAB944 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048CA0FA29AF783300AAB944 /* Menu.swift */; };
+		04A2E66D29BA1F0B00149549 /* ARInterfaceButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A2E66C29BA1F0B00149549 /* ARInterfaceButton.swift */; };
+		04A2E66F29BA2F6400149549 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A2E66E29BA2F6400149549 /* Utilities.swift */; };
+		04A2E67129BA2FC100149549 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A2E67029BA2FC100149549 /* DataManager.swift */; };
 		04E8748B29B20EA500E1CF4F /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E8748A29B20EA500E1CF4F /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -71,6 +74,9 @@
 		048CA0D829AF5C4600AAB944 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		048CA0F829AF706700AAB944 /* StartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButton.swift; sourceTree = "<group>"; };
 		048CA0FA29AF783300AAB944 /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		04A2E66C29BA1F0B00149549 /* ARInterfaceButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARInterfaceButton.swift; sourceTree = "<group>"; };
+		04A2E66E29BA2F6400149549 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		04A2E67029BA2FC100149549 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		04E8748A29B20EA500E1CF4F /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -185,6 +191,8 @@
 			children = (
 				0485F01A299D6E46009AD5CD /* JsonManager.swift */,
 				0462613729AE802900AD9935 /* FirebaseManager.swift */,
+				04A2E66E29BA2F6400149549 /* Utilities.swift */,
+				04A2E67029BA2FC100149549 /* DataManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -193,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */,
+				04A2E66C29BA1F0B00149549 /* ARInterfaceButton.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -353,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				045805692983F81100A7966D /* ContentView.swift in Sources */,
+				04A2E66F29BA2F6400149549 /* Utilities.swift in Sources */,
 				048CA0F929AF706700AAB944 /* StartButton.swift in Sources */,
 				045805672983F81100A7966D /* AppDelegate.swift in Sources */,
 				0485F01B299D6E46009AD5CD /* JsonManager.swift in Sources */,
@@ -362,6 +372,8 @@
 				0462613829AE802900AD9935 /* FirebaseManager.swift in Sources */,
 				048CA0D929AF5C4600AAB944 /* HomeView.swift in Sources */,
 				04684E3E299CEA5200F52EE6 /* ExpandingButton.swift in Sources */,
+				04A2E67129BA2FC100149549 /* DataManager.swift in Sources */,
+				04A2E66D29BA1F0B00149549 /* ARInterfaceButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
