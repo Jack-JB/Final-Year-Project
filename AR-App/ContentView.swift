@@ -9,19 +9,25 @@ import SwiftUI
 import RealityKit
 import UIKit
 import ARKit
+import SceneKit
+
+protocol JSONDataDelegate: AnyObject {
+    func didReceiveJSONData(_ data: [String: Any])
+}
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - Class Properties
   
     @IBOutlet var sceneView: ARSCNView!
-    var currentNode: SCNNode?
-    var previousNode: SCNNode?
-    var firstNode: SCNNode?
-    var nodes: [SCNNode] = []
-    var rootNode = SCNNode()
+    private var currentNode: SCNNode?
+    private var previousNode: SCNNode?
+    private var firstNode: SCNNode?
+    private var nodes: [SCNNode] = []
+    private var rootNode = SCNNode()
     
-    override func viewDidLoad() {
+    // MARK: - View Management
+    override internal func viewDidLoad() {
         super.viewDidLoad()
         
         // Set up the ARSCNView
@@ -49,7 +55,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 view.addSubview(expandableButton)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override internal func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Create a session configuration
@@ -81,7 +87,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
        let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear", for: .normal)
         clearButton.frame = CGRect(x: 160, y: 750, width: 100, height: 44)
-        clearButton.addTarget(self, action: #selector(showMenuButtonPressed), for: .touchUpInside)
+        clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
         clearButton.backgroundColor = .darkGray
         view.addSubview(clearButton)
 
@@ -89,8 +95,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
     }
 
-    // MARK: - Touch even management
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    // MARK: - Touch event management
+    override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         
         let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
@@ -118,7 +124,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     // TODO: First and last node are not part of the array, this needs fixing as they will not be destroyed
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override internal func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
         let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
@@ -146,7 +152,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - Node Handler
     // This function creates the sphere nodes to allow the drawing within the app
-    func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?, rootNode: SCNNode) {
+    private func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?, rootNode: SCNNode) {
             
         // Create a new sphere node at the touch position
         let sphereNode = SCNNode()
@@ -157,16 +163,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Add the sphere node to the parent node
         rootNode.addChildNode(sphereNode)
             
-        // If this is not the first point in the drawing, connect the current point with the previous point using a line
-       
-            
         // Update the previous node to be the current sphere node for the next point
         nodes.append(sphereNode)
         previousNode = sphereNode
     }
 
     // TODO: Create a UI button to handle this function
-    func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
+    private func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
         for node in nodes {
             if let geometry = node.geometry {
                 let material = geometry.firstMaterial!
@@ -174,109 +177,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
+    
+    // MARK: - IBAction functons
+    @IBAction private func loadButtonPressed(_ sender: UIButton) {
+       
 
-    // MARK: - Save, Load functionality
-    func save() {
-        // Get the URL to the documents directory
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        // Set the file name for the saved scene
-        let fileName = "Scene.arobject"
-        // Create the URL for the saved scene file
-        let fileURL = documentsDirectory.appendingPathComponent(fileName)
-        // Create an NSKeyedArchiver object to encode the nodes array
-        let archiver = NSKeyedArchiver(requiringSecureCoding: false)
-        // Encode the nodes array
-        archiver.encode(nodes, forKey: "nodes")
-        // Write the encoded data to the file
-        let data = archiver.encodedData
-        do {
-            try data.write(to: fileURL)
-        } catch {
-            print("Error saving scene: \(error)")
-        }
-    }
-
-    func load() -> [SCNNode] {
-            // Get the URL to the documents directory
-            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            // Set the file name for the saved scene
-            let fileName = "Scene.arobject"
-            // Create the URL for the saved scene file
-            let fileURL = documentsDirectory.appendingPathComponent(fileName)
-            // Initialize an NSKeyedUnarchiver object to decode the data from the file
-            do {
-                let data = try Data(contentsOf: fileURL)
-                let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
-                // Decode the nodes array from the file
-                let decodedNodes = unarchiver.decodeObject(forKey: "nodes") as? [SCNNode]
-                // Check if the decoded nodes array is not nil
-                if let decodedNodes = decodedNodes {
-                    // Return the decoded nodes array
-                    return decodedNodes
-                } else {
-                    print("Error loading scene")
-                }
-            } catch {
-                print("Error reading data from file")
-            }
-            return []
-        }
-
-        @IBAction func loadButtonPressed(_ sender: UIButton) {
-            let fileName = "Nodes.json"
-            let jsonManager = JsonManager()
-            let firebaseManager = FirebaseManager()
-           
-            // current parameter used as placeholder for testing
-            loadData(documentId: "tree")
-            print(nodes)
-           /* nodes = jsonManager.loadNodesFromJSONFile(fileName: fileName)!
-            for node in nodes {
-                node.geometry = SCNSphere(radius: 0.01)
-                sceneView.scene.rootNode.addChildNode(node)
-            } */
-        }
-    
-    func loadData(documentId: String) {
-        let firebaseManager = FirebaseManager()
-        let jsonManager = JsonManager()
-        
-        firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { [self] data, error in
-             if let data = data {
-                 // Process the data here
-                 do {
-                     let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                     nodes = jsonManager.loadNodesFromJSONData(jsonData: jsonData)!
-                     
-                     for node in nodes {
-                         node.geometry = SCNSphere(radius: 0.01)
-                         sceneView.scene.rootNode.addChildNode(node)
-                     }
-                     // Use the jsonData here
-                 } catch {
-                     // Handle the error here
-                     print(error.localizedDescription)
-                 }
-                 
-                 //print(data)
-             } else {
-                 // Handle the error
-                 print(error?.localizedDescription ?? "Unknown error")
-             }
-         }
     }
     
-    // Debugging purposes: Check if 2 arrays are equal
-    func areArraysEqual(_ array1: [SCNNode], _ array2: [SCNNode]) -> Bool {
-        return array1 == array2
-    }
-    
-    // Debugging purposes: Return the type of an array
-    func getType<T>(_ array: [T]) -> String {
-        return "\(type(of: array))"
-    }
-    
-    @IBAction func saveButtonPressed(_ sender: Any) {
+    @IBAction private func saveButtonPressed(_ sender: Any) {
         let jsonManager = JsonManager()
         jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
         
@@ -313,31 +221,51 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // Present the alert controller
         present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
+            let myMenuView = MenuView()
+            let hostingController = UIHostingController(rootView: myMenuView)
+            present(hostingController, animated: true, completion: nil)
+        }
+    
+    @IBAction private func clearButtonPressed(_ sender: Any) {
+        clear()
+    }
+    
+    // MARK: - Main class functions
+    
+    public func loadData(documentId: String, completion: @escaping (Data?, Error?) -> Void) {
+        let firebaseManager = FirebaseManager()
+
+        firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { data, error in
+            if let data = data {
+                do {
+                    let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                    completion(jsonData, nil)
+                } catch {
+                    completion(nil, error)
+                }
+            } else {
+                completion(nil, error)
+            }
+        }
     }
 
-    func showErrorMessage(message: String) {
+    private func showErrorMessage(message: String) {
         let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
     }
 
-
-    @IBAction func clearButtonPressed(_ sender: Any) {
-        clear()
-            
-    }
-    
-    @objc func didTapFirstButton() {
-        changeNodeColour(nodes, color: UIColor.blue)
-        }
-    
-    func removeNode(_ node: SCNNode) {
+    private func removeNode(_ node: SCNNode) {
         node.removeFromParentNode()
         nodes = nodes.filter { $0 !== node }
     }
 
-    func clear() {
+    private func clear() {
         for node in nodes {
             removeNode(node)
         }
@@ -348,23 +276,4 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             node.removeFromParentNode()
         }
     }
-    
-    func deleteJSONFile(fileName: String) {
-        let fileManager = FileManager.default
-        guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return
-        }
-        let fileURL = documentsURL.appendingPathComponent(fileName)
-        do {
-            try fileManager.removeItem(at: fileURL)
-        } catch let error {
-            print("Error deleting JSON file: \(error.localizedDescription)")
-        }
-    }
-    
-    @IBAction func showMenuButtonPressed(_ sender: UIButton) {
-            let myMenuView = MenuView()
-            let hostingController = UIHostingController(rootView: myMenuView)
-            present(hostingController, animated: true, completion: nil)
-        }
 }
