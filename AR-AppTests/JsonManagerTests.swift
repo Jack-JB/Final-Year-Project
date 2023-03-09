@@ -101,6 +101,34 @@ final class AR_AppTests: XCTestCase {
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+    // Test that Json data can be parsed into SCNNode data with the function loadNodesFromJSONData()
+    func testLoadNodesFromJSONData() {
+        
+        // ARRANGE:
+        let jsonString = """
+        {
+            "nodes": [
+                {
+                    "name": "node",
+                    "position": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "scale": { "x": 1.0, "y": 1.0, "z": 1.0 },
+                    "rotation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+                    "color": { "r": 1.0, "g": 0.0, "b": 0.0 }
+                }
+            ]
+        }
+        """
+        let jsonData = jsonString.data(using: .utf8)!
+        let expectedNodesCount = 1
+        let expectedNodeName = "node"
+        
+        // ACT:
+        let result = jsonManager.loadNodesFromJSONData(jsonData: jsonData)
+        
+        // ASSERT:
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result!.count, expectedNodesCount)
+        XCTAssertEqual(result![0].name, expectedNodeName)
     }
 
     func testExample() throws {
