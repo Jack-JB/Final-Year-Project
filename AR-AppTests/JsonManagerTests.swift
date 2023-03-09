@@ -57,50 +57,18 @@ class JsonManagerTests: XCTestCase {
         XCTAssertNoThrow(try jsonManager.printJSONFileContents(fileName: fileName))
     }
     
+    // Tests that testCheckJSONFileExists() and will assert whether the file created exists.
     func testCheckJSONFileExists() {
-        // Arrange
-        let fileName = "test.json"
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        // ARRANGE:
+        // Arrange not required, as it is all located within setUp()
         
-        // Create a test JSON file with some sample data
-        let testData = [
-            ["name": "John", "age": 30],
-            ["name": "Jane", "age": 25]
-        ]
-        let jsonData = try! JSONSerialization.data(withJSONObject: testData, options: [])
-        FileManager.default.createFile(atPath: fileURL.path, contents: jsonData, attributes: nil)
-        
-        // Act
+        // ACT:
         let fileExists = JsonManager().checkJSONFileExists(fileName: fileName)
         
-        // Assert
+        // ASSERT:
         XCTAssertTrue(fileExists, "The JSON file should exist")
-        
-        // Clean up the test file
-        try! FileManager.default.removeItem(at: fileURL)
     }
-
-
-}
     
-
-
-
-
-
-
-
-
-/*
-final class AR_AppTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     // Test that Json data can be parsed into SCNNode data with the function loadNodesFromJSONData()
     func testLoadNodesFromJSONData() {
         
