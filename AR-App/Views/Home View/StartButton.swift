@@ -10,10 +10,11 @@ import SwiftUI
 struct StartButton: View {
 
     var text: String
+    var icon: String
     
     var body: some View {
         HStack {
-            Image(systemName: "arkit")
+            Image(systemName: icon)
                 .font(.system(size: 24))
                 .foregroundColor(.white)
                 .padding(.trailing, 10)

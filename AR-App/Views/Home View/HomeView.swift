@@ -1,5 +1,5 @@
 //
-//  MenuList.swift
+//  HomeView.swift
 //  AR-App
 //
 //  Created by Jack Burrows on 01/03/2023.
@@ -19,9 +19,9 @@ struct HomeView: View {
                     .frame(maxHeight: .infinity)
                 VStack {
                     NavigationLink(destination: ARView()) {
-                        StartButton(text: "Start Solo AR Experience")
+                        StartButton(text: "Start Solo AR Experience", icon: "arkit")
                     }
-                    StartButton(text: "Start Group AR Experience")
+                    StartButton(text: "Start Group AR Experience", icon: "arkit")
                     
                     Text("App Build Version: \(buildNumber!)")
                         .frame(maxHeight: .infinity, alignment: .bottomTrailing)

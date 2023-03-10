@@ -18,7 +18,7 @@ struct DocumentRowView: View {
     var body: some View {
         HStack {
             icon
-            Text(documentID)
+            Text(documentID.capitalized)
         }
         .onTapGesture {
             onTap()
