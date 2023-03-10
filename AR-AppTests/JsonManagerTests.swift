@@ -8,7 +8,6 @@
 import XCTest
 import Firebase
 import SceneKit
-import XCTest
 
 
 @testable import AR_App

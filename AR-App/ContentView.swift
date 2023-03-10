@@ -227,7 +227,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
-        menuView.delegate = self
         let hostingController = UIHostingController(rootView: menuView)
         present(hostingController, animated: true, completion: nil)
     }

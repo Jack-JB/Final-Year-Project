@@ -10,10 +10,6 @@ import Firebase
 import FirebaseCore
 import ARKit
 
-protocol MenuDelegate: AnyObject {
-    func didSelectData(_ data: [String: Any])
-}
-
 struct DocumentRowView: View {
     let icon: Image
     let documentID: String
@@ -32,11 +28,11 @@ struct DocumentRowView: View {
 
 struct MenuView: View {
     @State var jsonData: [String: Any] = [:]
+    @State var documents: [DocumentSnapshot] = []
     @Environment(\.dismiss) var dismiss
-    weak var delegate: MenuDelegate?
     let firebaseManager = FirebaseManager()
     let arViewController = ARViewController()
-    @State var documents: [DocumentSnapshot] = []
+    let jsonManager = JsonManager()
     
     var body: some View {
         NavigationView {
@@ -71,9 +67,11 @@ struct MenuView: View {
             if let document = document, document.exists {
                 if let data = document.data() {
                     // Successfully loaded the data
-                    JsonManager().saveJSONDataToFile(jsonData: data, fileName: "nodes.json")
-                    if JsonManager().checkJSONFileExists(fileName: "nodes.json") {
-                        print("File exists")
+                    if jsonManager.saveJSONDataToFile(jsonData: data, fileName: "nodes.json") {
+                        print("JSON file saved successfully!")
+                        print(data)
+                    } else {
+                        print("Error saving JSON file.")
                     }
                 }
             } else {
@@ -83,12 +81,8 @@ struct MenuView: View {
     }
 }
 
-
-/*
 struct Menu_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
     }
 }
-
-*/
