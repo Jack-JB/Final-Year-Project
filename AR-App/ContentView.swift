@@ -12,22 +12,20 @@ import ARKit
 import SceneKit
 
 
-class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate {
  
-    func didSelectData(_ data: [String: Any]) {
-        print("Selected data: \(data)")
-    }
-    
-
-    // MARK: - Class Properties
-  
+    // MARK: - Member Variables
     @IBOutlet public var sceneView: ARSCNView!
     private var currentNode: SCNNode?
     private var previousNode: SCNNode?
     private var firstNode: SCNNode?
     public var nodes: [SCNNode] = []
     public var rootNode = SCNNode()
-
+    
+    private let firebaseManager = FirebaseManager()
+    private let jsonManager = JsonManager()
+    private var menuView = MenuView()
+    
     // MARK: - View Management
     override internal func viewDidLoad() {
         super.viewDidLoad()
@@ -179,29 +177,20 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
     
     // MARK: - IBAction functons
     @IBAction private func testButtonPressed(_ sender: UIButton){
-        let jsonManager = JsonManager()
-        
         nodes = jsonManager.loadNodesFromJSONFile(fileName: "nodes.json")!
         for node in nodes {
             node.geometry = SCNSphere(radius: 0.01)
             sceneView.scene.rootNode.addChildNode(node)
         }
-        
-    
     }
     
     @IBAction private func loadButtonPressed(_ sender: UIButton) {
-        // Open menu
-        let myMenuView = MenuView()
-        let hostingController = UIHostingController(rootView: myMenuView)
+        let hostingController = UIHostingController(rootView: menuView)
         present(hostingController, animated: true, completion: nil)
     }
     
     @IBAction private func saveButtonPressed(_ sender: Any) {
-        //let jsonManager = JsonManager()
         //jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
-        
-        let firebaseManager = FirebaseManager()
         
         // Create an alert controller with a text field for entering the document name
         let alertController = UIAlertController(title: "Save Drawing", message: "Enter a name for your drawing:", preferredStyle: .alert)
@@ -220,12 +209,12 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
             
             let collectionName = "myCollection"
             
-            let jsonString = JsonManager().nodesToJSON(nodes: self.nodes)
+            let jsonString = self.jsonManager.nodesToJSON(nodes: self.nodes)
             let jsonData = jsonString!.data(using: .utf8)!
             let serialisedJson = try! JSONSerialization.jsonObject(with: jsonData, options: []) as! [String: Any]
             
             // Send the JSON data to Firestore using the drawing name as the document ID
-            firebaseManager.sendJSONDataToFirestore(data: serialisedJson, collectionName: collectionName, documentName: drawingName)
+            self.firebaseManager.sendJSONDataToFirestore(data: serialisedJson, collectionName: collectionName, documentName: drawingName)
         }
         alertController.addAction(saveAction)
         
@@ -238,9 +227,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
     }
     
     @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
-        var myMenuView = MenuView()
-        myMenuView.delegate = self
-        let hostingController = UIHostingController(rootView: myMenuView)
+        menuView.delegate = self
+        let hostingController = UIHostingController(rootView: menuView)
         present(hostingController, animated: true, completion: nil)
     }
     
@@ -251,7 +239,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
     // MARK: - Main class functions
     
     public func loadData(documentId: String, completion: @escaping (Data?, Error?) -> Void) {
-        let firebaseManager = FirebaseManager()
 
         firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { data, error in
             if let data = data {
