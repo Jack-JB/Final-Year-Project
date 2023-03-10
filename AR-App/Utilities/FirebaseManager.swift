@@ -10,6 +10,8 @@ import Firebase
 
 class FirebaseManager {
     
+    private let db = Firestore.firestore()
+    
     func sendJSONDataToFirestore(data: [String: Any], collectionName: String, documentName: String) {
         let db = Firestore.firestore()
         let docRef = db.collection(collectionName).document(documentName)
@@ -24,7 +26,6 @@ class FirebaseManager {
 
     
     func getDataFromFirestoreById(documentId: String, collectionName: String, completion: @escaping (_ data: [String: Any]?, _ error: Error?) -> Void) {
-        let db = Firestore.firestore()
         let docRef = db.collection(collectionName).document(documentId)
         docRef.getDocument { (document, error) in
             if let document = document, document.exists {
@@ -42,9 +43,7 @@ class FirebaseManager {
     }
     
     func loadData(completion: @escaping (Result<[DocumentSnapshot], Error>) -> Void) {
-        let db = Firestore.firestore()
         let collectionRef = db.collection("myCollection")
-        
         collectionRef.getDocuments { (querySnapshot, error) in
             if let error = error {
                 completion(.failure(error))

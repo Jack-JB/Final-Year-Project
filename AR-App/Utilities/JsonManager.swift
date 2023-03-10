@@ -56,20 +56,20 @@ class JsonManager {
             return nil
         }
     }
-
+    
     func saveNodesAsJSONFile(nodes: [SCNNode], fileName: String) -> Bool {
         guard let jsonString = nodesToJSON(nodes: nodes) else {
             print("Error generating JSON data")
             return false
         }
-
+        
         guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("Error getting documents directory")
             return false
         }
-
+        
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
-
+        
         do {
             try jsonString.write(to: fileURL, atomically: true, encoding: .utf8)
             print("JSON file saved to: \(fileURL.path)")
@@ -85,9 +85,9 @@ class JsonManager {
             print("Error getting documents directory")
             return
         }
-
+        
         let fileURL = documentsDirectory.appendingPathComponent(fileName)
-
+        
         do {
             let jsonData = try Data(contentsOf: fileURL)
             let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -117,7 +117,7 @@ class JsonManager {
             print("Error reading JSON data: \(error.localizedDescription)")
         }
     }
-
+    
     
     func loadNodesFromJSONFile(fileName: String) -> [SCNNode]? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -246,7 +246,7 @@ class JsonManager {
             return nil
         }
     }
-
+    
     func deleteJSONFile(fileName: String) {
         let fileManager = FileManager.default
         guard let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {

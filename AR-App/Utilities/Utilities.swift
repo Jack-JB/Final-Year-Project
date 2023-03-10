@@ -10,7 +10,7 @@ import SceneKit
 
 class Utilities {
     // Debugging purposes: Check if 2 arrays are equal
-    private func areArraysEqual(_ array1: [SCNNode], _ array2: [SCNNode]) -> Bool {
+    internal func areArraysEqual(_ array1: [SCNNode], _ array2: [SCNNode]) -> Bool {
         return array1 == array2
     }
     
