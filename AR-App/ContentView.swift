@@ -90,6 +90,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
         clearButton.backgroundColor = .darkGray
         view.addSubview(clearButton)
+        
+        let testButton = UIButton(type: .system)
+        testButton.setTitle("Load", for: .normal)
+        testButton.frame = CGRect(x: 160, y: 650, width: 100, height: 44)
+        testButton.addTarget(self, action: #selector(testButtonPressed), for: .touchUpInside)
+        testButton.backgroundColor = .darkGray
+        view.addSubview(testButton)
 
         // Run the view's session
         sceneView.session.run(configuration)
@@ -179,6 +186,18 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     // MARK: - IBAction functons
+    @IBAction private func testButtonPressed(_ sender: UIButton){
+        let jsonManager = JsonManager()
+        
+        nodes = jsonManager.loadNodesFromJSONFile(fileName: "nodes.json")!
+        for node in nodes {
+            node.geometry = SCNSphere(radius: 0.01)
+            sceneView.scene.rootNode.addChildNode(node)
+        }
+        
+    
+    }
+    
     @IBAction private func loadButtonPressed(_ sender: UIButton) {
        
 
