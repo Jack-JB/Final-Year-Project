@@ -11,21 +11,23 @@ import UIKit
 import ARKit
 import SceneKit
 
-protocol JSONDataDelegate: AnyObject {
-    func didReceiveJSONData(_ data: [String: Any])
-}
 
-class ARViewController: UIViewController, ARSCNViewDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate, MenuDelegate {
+ 
+    func didSelectData(_ data: [String: Any]) {
+        print("Selected data: \(data)")
+    }
+    
 
     // MARK: - Class Properties
   
-    @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet public var sceneView: ARSCNView!
     private var currentNode: SCNNode?
     private var previousNode: SCNNode?
     private var firstNode: SCNNode?
-    private var nodes: [SCNNode] = []
-    private var rootNode = SCNNode()
-    
+    public var nodes: [SCNNode] = []
+    public var rootNode = SCNNode()
+
     // MARK: - View Management
     override internal func viewDidLoad() {
         super.viewDidLoad()
@@ -47,12 +49,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // Make the view controller the first responder
         becomeFirstResponder()
-        
-        let expandableButton = ExpandableButton(frame: CGRect(x: 50, y: 700, width: 150, height: 50))
-                expandableButton.setTitle("Change Colour", for: .normal)
-                expandableButton.backgroundColor = .gray
-                
-                view.addSubview(expandableButton)
     }
     
     override internal func viewWillAppear(_ animated: Bool) {
@@ -66,10 +62,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // MARK: - UI component declaration
         
-        let expandableButton = ExpandableButton(frame: CGRect(x: 310, y: 100, width: 150, height: 50))
-        view.addSubview(expandableButton)
-
-        
         let saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
         saveButton.frame = CGRect(x: 20, y: 750, width: 100, height: 44)
@@ -78,13 +70,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         view.addSubview(saveButton)
         
         let loadButton = UIButton(type: .system)
-        loadButton.setTitle("Load", for: .normal)
+        loadButton.setTitle("Menu", for: .normal)
         loadButton.frame = CGRect(x: 310, y: 750, width: 100, height: 44)
         loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
         loadButton.backgroundColor = .darkGray
         view.addSubview(loadButton)
         
-       let clearButton = UIButton(type: .system)
+        let clearButton = UIButton(type: .system)
         clearButton.setTitle("Clear", for: .normal)
         clearButton.frame = CGRect(x: 160, y: 750, width: 100, height: 44)
         clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
@@ -199,13 +191,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction private func loadButtonPressed(_ sender: UIButton) {
-       
-
+        // Open menu
+        let myMenuView = MenuView()
+        let hostingController = UIHostingController(rootView: myMenuView)
+        present(hostingController, animated: true, completion: nil)
     }
     
     @IBAction private func saveButtonPressed(_ sender: Any) {
-        let jsonManager = JsonManager()
-        jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
+        //let jsonManager = JsonManager()
+        //jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
         
         let firebaseManager = FirebaseManager()
         
@@ -244,10 +238,11 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
-            let myMenuView = MenuView()
-            let hostingController = UIHostingController(rootView: myMenuView)
-            present(hostingController, animated: true, completion: nil)
-        }
+        var myMenuView = MenuView()
+        myMenuView.delegate = self
+        let hostingController = UIHostingController(rootView: myMenuView)
+        present(hostingController, animated: true, completion: nil)
+    }
     
     @IBAction private func clearButtonPressed(_ sender: Any) {
         clear()
