@@ -259,4 +259,24 @@ class JsonManager {
             print("Error deleting JSON file: \(error.localizedDescription)")
         }
     }
+    
+    func checkJSONFileExists(fileName: String) -> Bool {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        return FileManager.default.fileExists(atPath: fileURL.path)
+    }
+    
+    func saveJSONDataToFile(jsonData: [String: Any], fileName: String) -> Bool {
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonData, options: .prettyPrinted)
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                let fileURL = dir.appendingPathComponent(fileName)
+                try jsonData.write(to: fileURL)
+                return true
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        return false
+    }
 }
