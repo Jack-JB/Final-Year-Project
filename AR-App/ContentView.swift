@@ -13,18 +13,18 @@ import SceneKit
 
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
- 
-    // MARK: - Member Variables
+
+    // MARK: - Class Properties
+  
     @IBOutlet public var sceneView: ARSCNView!
     private var currentNode: SCNNode?
     private var previousNode: SCNNode?
     private var firstNode: SCNNode?
     public var nodes: [SCNNode] = []
     public var rootNode = SCNNode()
-    
-    private let firebaseManager = FirebaseManager()
-    private let jsonManager = JsonManager()
-    private var menuView = MenuView()
+
+    private var jsonManager = JsonManager()
+    private var firebaseManager = FirebaseManager()
     
     // MARK: - View Management
     override internal func viewDidLoad() {
@@ -56,13 +56,15 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         let configuration = ARWorldTrackingConfiguration()
 
         // Enable plane detection
-        configuration.planeDetection = [.horizontal]
+        configuration.planeDetection = [.horizontal, .vertical]
         
         // MARK: - UI component declaration
         
         let saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
-        saveButton.frame = CGRect(x: 20, y: 750, width: 100, height: 44)
+        saveButton.setImage(UIImage(systemName: "square.and.arrow.down"), for: .normal) // Add image
+        saveButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0) // Adjust image position
+        saveButton.frame = CGRect(x: 20, y: 750, width: 120, height: 44) // Adjust frame to accommodate image
         saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
         saveButton.backgroundColor = .darkGray
         view.addSubview(saveButton)
@@ -156,7 +158,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             
         sphereNode.geometry = SCNSphere(radius: 0.01)
         sphereNode.position = position
-            
+        
         // Add the sphere node to the parent node
         rootNode.addChildNode(sphereNode)
             
@@ -185,12 +187,28 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction private func loadButtonPressed(_ sender: UIButton) {
-        let hostingController = UIHostingController(rootView: menuView)
+        // Open menu
+        let myMenuView = MenuView()
+        let hostingController = UIHostingController(rootView: myMenuView)
         present(hostingController, animated: true, completion: nil)
+        
+        let testData: () = jsonManager.printJSONFileContents(fileName: "test.json")
+        let nodeData: () = jsonManager.printJSONFileContents(fileName: "nodes.json")
+        print("Test Data")
+        print(testData)
+        print("=================")
+        print("Node Data")
+        print(nodeData)
     }
     
     @IBAction private func saveButtonPressed(_ sender: Any) {
-        //jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "Nodes.json")
+        // Json file used for testing
+        // MARK: -  ====== DELETE  =======
+        if jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "test.json") {
+            print("JSON file saved successfully!")
+        } else {
+            print("Error saving JSON file.")
+        }
         
         // Create an alert controller with a text field for entering the document name
         let alertController = UIAlertController(title: "Save Drawing", message: "Enter a name for your drawing:", preferredStyle: .alert)
@@ -223,10 +241,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // Present the alert controller
         present(alertController, animated: true, completion: nil)
-        
     }
     
     @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
+        let menuView = MenuView()
         let hostingController = UIHostingController(rootView: menuView)
         present(hostingController, animated: true, completion: nil)
     }
@@ -237,8 +255,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     
     // MARK: - Main class functions
     
-    public func loadData(documentId: String, completion: @escaping (Data?, Error?) -> Void) {
-
+    private func loadData(documentId: String, completion: @escaping (Data?, Error?) -> Void) {
         firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { data, error in
             if let data = data {
                 do {
@@ -253,6 +270,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         }
     }
 
+    // Error message displayed when the user does not give their drawing a name
     private func showErrorMessage(message: String) {
         let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
