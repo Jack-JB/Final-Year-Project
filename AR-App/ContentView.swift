@@ -60,35 +60,41 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         
         // MARK: - UI component declaration
         
-        let saveButton = UIButton(type: .system)
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.setImage(UIImage(systemName: "square.and.arrow.down"), for: .normal) // Add image
-        saveButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0) // Adjust image position
-        saveButton.frame = CGRect(x: 20, y: 750, width: 120, height: 44) // Adjust frame to accommodate image
-        saveButton.addTarget(self, action: #selector(saveButtonPressed), for: .touchUpInside)
-        saveButton.backgroundColor = .darkGray
+        let saveButton = createButton(
+            image: "square.and.arrow.down",
+            title: "Save", frame: CGRect(x: 20, y: 750, width: 120, height: 44),
+            selector: #selector(saveButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
         view.addSubview(saveButton)
         
-        let loadButton = UIButton(type: .system)
-        loadButton.setTitle("Menu", for: .normal)
-        loadButton.frame = CGRect(x: 310, y: 750, width: 100, height: 44)
-        loadButton.addTarget(self, action: #selector(loadButtonPressed), for: .touchUpInside)
-        loadButton.backgroundColor = .darkGray
-        view.addSubview(loadButton)
+        let menuButton = createButton(
+            image: "list.bullet",
+            title: "Menu", frame: CGRect(x: 175, y: 680, width: 100, height: 44),
+            selector: #selector(loadButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(menuButton)
         
-        let clearButton = UIButton(type: .system)
-        clearButton.setTitle("Clear", for: .normal)
-        clearButton.frame = CGRect(x: 160, y: 750, width: 100, height: 44)
-        clearButton.addTarget(self, action: #selector(clearButtonPressed), for: .touchUpInside)
-        clearButton.backgroundColor = .darkGray
+        let clearButton = createButton(
+            image: "trash",
+            title: "Clear", frame: CGRect(x: 175, y: 750, width: 100, height: 44),
+            selector: #selector(clearButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
         view.addSubview(clearButton)
         
-        let testButton = UIButton(type: .system)
-        testButton.setTitle("Load", for: .normal)
-        testButton.frame = CGRect(x: 160, y: 650, width: 100, height: 44)
-        testButton.addTarget(self, action: #selector(testButtonPressed), for: .touchUpInside)
-        testButton.backgroundColor = .darkGray
-        view.addSubview(testButton)
+        let loadButton = createButton(
+            image: "square.and.arrow.up",
+            title: "Load", frame: CGRect (x: 310, y: 750, width: 100, height: 44),
+            selector: #selector(testButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(loadButton)
 
         // Run the view's session
         sceneView.session.run(configuration)
