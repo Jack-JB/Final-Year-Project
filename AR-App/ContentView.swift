@@ -93,6 +93,19 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         // Run the view's session
         sceneView.session.run(configuration)
     }
+    
+    func createButton(image: UIImage, title: String, frame: CGRect, selector: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setImage(image, for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
+        button.frame = frame
+        button.addTarget(self, action: selector, for: .touchUpInside)
+        button.backgroundColor = .darkGray
+        
+        return button
+    }
+
 
     // MARK: - Touch event management
     override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
