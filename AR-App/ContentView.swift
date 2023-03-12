@@ -94,14 +94,17 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
     }
     
-    func createButton(image: UIImage, title: String, frame: CGRect, selector: Selector) -> UIButton {
+    func createButton(image: String, title: String, frame: CGRect, selector: Selector, textColour: UIColor, backgroundColor: UIColor) -> UIButton {
         let button = UIButton(type: .system)
+        let imageIcon = UIImage(systemName: image)?.withTintColor(textColour, renderingMode: .alwaysOriginal)
         button.setTitle(title, for: .normal)
-        button.setImage(image, for: .normal)
+        button.setImage(imageIcon, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
         button.frame = frame
         button.addTarget(self, action: selector, for: .touchUpInside)
-        button.backgroundColor = .darkGray
+        button.backgroundColor = backgroundColor
+        button.setTitleColor(textColour, for: .normal)
+        button.layer.cornerRadius = 10
         
         return button
     }
