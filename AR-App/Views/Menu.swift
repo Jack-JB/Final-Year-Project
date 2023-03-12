@@ -27,15 +27,24 @@ struct DocumentRowView: View {
 }
 
 struct MenuView: View {
-    @State var jsonData: [String: Any] = [:]
-    @State var documents: [DocumentSnapshot] = []
+    // Dictionary that maps strings to values of any type
+    @State private var jsonData: [String: Any] = [:]
+    // Array of `DocumentSnapshot` objects
+    @State private var documents: [DocumentSnapshot] = []
+    // Environment value to allow the dismissal of the view
     @Environment(\.dismiss) var dismiss
+    
     let firebaseManager = FirebaseManager()
     let arViewController = ARViewController()
     let jsonManager = JsonManager()
     
     var body: some View {
         NavigationView {
+            /* Create a `List` that displays the `documents` array
+            / `id` is a key path that uniquely identifies each element of the list
+            / Each element is represented by a `DocumentRowView` instance
+            / When a row is tapped, it loads data for the corresponding document within Firebase
+            / and dismisses the current view */
             List(documents, id: \.documentID) { document in
                 DocumentRowView(icon: Image(systemName: "scribble.variable"),
                     documentID: document.documentID,
@@ -44,10 +53,12 @@ struct MenuView: View {
                         dismiss()
                     })
             }
+            // Use the `onAppear` modifier to load data from Firebase when the view appears
             .onAppear {
                 firebaseManager.loadData { result in
                     switch result {
                     case .success(let documents):
+                        // When the data is loaded successfully, update the `documents` state property
                         self.documents = documents
                     case .failure(let error):
                         print(error)
@@ -58,7 +69,7 @@ struct MenuView: View {
         }
     }
     
-    func loadData(documentID: String) {
+    private func loadData(documentID: String) {
         let db = Firestore.firestore()
         let collection = db.collection("myCollection")
         let docId = documentID
@@ -69,7 +80,7 @@ struct MenuView: View {
                     // Successfully loaded the data
                     if jsonManager.saveJSONDataToFile(jsonData: data, fileName: "nodes.json") {
                         print("JSON file saved successfully!")
-                        print(data)
+                        //print(data)
                     } else {
                         print("Error saving JSON file.")
                     }
@@ -81,8 +92,10 @@ struct MenuView: View {
     }
 }
 
+#if DEBUG
 struct Menu_Previews: PreviewProvider {
     static var previews: some View {
         MenuView()
     }
 }
+#endif
