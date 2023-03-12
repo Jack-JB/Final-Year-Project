@@ -13,7 +13,6 @@ class FirebaseManager {
     private let db = Firestore.firestore()
     
     func sendJSONDataToFirestore(data: [String: Any], collectionName: String, documentName: String) {
-        let db = Firestore.firestore()
         let docRef = db.collection(collectionName).document(documentName)
         docRef.setData(data) { error in
             if let error = error {

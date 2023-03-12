@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import FirebaseCore
 
+// Entry point to the application
 @main
 struct MyApp: App {
   
@@ -18,6 +19,7 @@ struct MyApp: App {
   }
     var body: some Scene {
         WindowGroup {
+            // Call the starting point function
             HomeView()
         }
     }
@@ -36,8 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let window = UIWindow(frame: UIScreen.main.bounds)
     window.rootViewController = UIHostingController(rootView: contentView)
     window.makeKeyAndVisible()
-
-    
     
     return true
   }

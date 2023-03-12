@@ -20,8 +20,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     private var currentNode: SCNNode?
     private var previousNode: SCNNode?
     private var firstNode: SCNNode?
-    public var nodes: [SCNNode] = []
-    public var rootNode = SCNNode()
+    private var nodes: [SCNNode] = []
+    private var rootNode = SCNNode()
 
     private var jsonManager = JsonManager()
     private var firebaseManager = FirebaseManager()
@@ -115,7 +115,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         return button
     }
 
-
     // MARK: - Touch event management
     override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
@@ -181,7 +180,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         sphereNode.geometry = SCNSphere(radius: 0.01)
         sphereNode.position = position
         
-        // Add the sphere node to the parent node
+        // Add the sphere node to the parent node 
         rootNode.addChildNode(sphereNode)
             
         // Update the previous node to be the current sphere node for the next point
