@@ -1,64 +1,78 @@
-import UIKit
+import SwiftUI
+import SceneKit
 
-class ExpandableButton: UIButton {
-
-    var isExpanded: Bool = false
+struct ExpandableButton: View {
+    let buttonSize: CGFloat = 60
+    let buttonPadding: CGFloat = 15
     
-    var firstButton = UIButton()
-    var secondButton = UIButton()
-    var thirdButton = UIButton()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        configureButtons()
-    }
+    @State private var isExpanded = false
+    @State private var selectedColor: Color? = nil
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        configureButtons()
-    }
-    private func configureButtons() {
-        // Set up the first button
-        firstButton.setTitle("Red", for: .normal)
-        firstButton.backgroundColor = .red
-        firstButton.isHidden = true
-        addSubview(firstButton)
-
-        // Set up the second button
-        secondButton.setTitle("Blue", for: .normal)
-        secondButton.backgroundColor = .blue
-        secondButton.isHidden = true
-        addSubview(secondButton)
-
-        // Set up the third button
-        thirdButton.setTitle("Green", for: .normal)
-        thirdButton.backgroundColor = .green
-        thirdButton.isHidden = true
-        addSubview(thirdButton)
+    let nodes: [SCNNode]
+    let arViewController: ARViewController
+    
+    init(nodes: [SCNNode], arViewController: ARViewController) {
+        self.nodes = nodes
+        self.arViewController = arViewController
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        // Set the frames of the buttons
-        let buttonSize = CGSize(width: 100, height: 50)
-        let buttonX = frame.width - buttonSize.width - (-100) // adjust the value of 20 as needed
-        firstButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height * 3), size: buttonSize)
-        secondButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height * 2), size: buttonSize)
-        thirdButton.frame = CGRect(origin: CGPoint(x: buttonX, y: frame.height - buttonSize.height), size: buttonSize)
-    }
-
-    @objc private func didTapButton() {
-        // Toggle the isExpanded property
-        isExpanded.toggle()
-        
-        // Show or hide the buttons based on isExpanded
-        UIView.animate(withDuration: 0.3) {
-            self.firstButton.isHidden = !self.isExpanded
-            self.secondButton.isHidden = !self.isExpanded
-            self.thirdButton.isHidden = !self.isExpanded
+    var body: some View {
+        HStack {
+            if isExpanded {
+                HStack(spacing: buttonPadding) {
+                    ColorButton(color: .red) { self.selectedColor = .red }
+                    ColorButton(color: .blue) { self.selectedColor = .blue }
+                    ColorButton(color: .green) { self.selectedColor = .green }
+                }
+                .transition(.move(edge: .leading))
+            }
+            Button(action: {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            }) {
+                Image(systemName: "paintbrush.fill")
+                    .font(.system(size: 30))
+                    .frame(width: buttonSize, height: buttonSize)
+                    .foregroundColor(selectedColor ?? .primary)
+                    .background(Color.secondary)
+                    .cornerRadius(buttonSize / 2)
+            }
+            .padding(buttonPadding)
+        }
+        .onDisappear {
+            selectedColor = nil
+        }
+        .onChange(of: selectedColor) { color in
+            guard let color = color else { return }
+            arViewController.changeNodeColour(nodes, color: UIColor(color))
+            withAnimation {
+                isExpanded = false
+            }
         }
     }
 }
+
+struct ColorButton: View {
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            color
+                .frame(width: 40, height: 40)
+                .cornerRadius(20)
+        }
+    }
+}
+
+
+#if DEBUG
+struct ColourBurron_Previews: PreviewProvider {
+    static var previews: some View {
+        var scene = SCNScene()
+        let arViewController = ARViewController()
+        ExpandableButton(nodes: scene.rootNode.childNodes, arViewController: arViewController)
+    }
+}
+#endif
