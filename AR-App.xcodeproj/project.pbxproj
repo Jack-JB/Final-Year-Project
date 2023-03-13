@@ -11,7 +11,6 @@
 		045805672983F81100A7966D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805662983F81100A7966D /* AppDelegate.swift */; };
 		045805692983F81100A7966D /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805682983F81100A7966D /* ARViewController.swift */; };
 		0458056D2983F81200A7966D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0458056C2983F81200A7966D /* Assets.xcassets */; };
-		045805702983F81200A7966D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0458056F2983F81200A7966D /* Preview Assets.xcassets */; };
 		0458057A2983F81200A7966D /* JsonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805792983F81200A7966D /* JsonManagerTests.swift */; };
 		045805842983F81200A7966D /* HomeViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805832983F81200A7966D /* HomeViewTests.swift */; };
 		045805862983F81200A7966D /* AR_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045805852983F81200A7966D /* AR_AppUITestsLaunchTests.swift */; };
@@ -115,7 +114,6 @@
 		045805662983F81100A7966D /* AppDelegate.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; tabWidth = 2; };
 		045805682983F81100A7966D /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
 		0458056C2983F81200A7966D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0458056F2983F81200A7966D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		045805752983F81200A7966D /* AR-AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR-AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		045805792983F81200A7966D /* JsonManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonManagerTests.swift; sourceTree = "<group>"; };
 		0458057F2983F81200A7966D /* AR-AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR-AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -252,17 +250,8 @@
 				0467D6EF29A5009500D1A57C /* Views */,
 				0467D6F029A5012800D1A57C /* Utilities */,
 				0458056C2983F81200A7966D /* Assets.xcassets */,
-				0458056E2983F81200A7966D /* Preview Content */,
 			);
 			path = "AR-App";
-			sourceTree = "<group>";
-		};
-		0458056E2983F81200A7966D /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				0458056F2983F81200A7966D /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		045805782983F81200A7966D /* AR-AppTests */ = {
@@ -506,7 +495,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				045805702983F81200A7966D /* Preview Assets.xcassets in Resources */,
 				0458056D2983F81200A7966D /* Assets.xcassets in Resources */,
 				04A2E6E429BA9FFF00149549 /* GoogleService-Info.plist in Resources */,
 			);
@@ -717,8 +705,8 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arkit;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -752,8 +740,8 @@
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arkit;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

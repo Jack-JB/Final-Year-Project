@@ -8,6 +8,7 @@
 import Foundation
 import SceneKit
 
+// First iteration of saving functionality. This class is no longer in use
 class DataManager {
     var nodes = [SCNNode()]
     

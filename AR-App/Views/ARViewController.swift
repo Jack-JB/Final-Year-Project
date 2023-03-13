@@ -59,7 +59,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         configuration.planeDetection = [.horizontal, .vertical]
         
         // MARK: - UI component declaration
-        
         let saveButton = createButton(
             image: "square.and.arrow.down",
             title: "Save", frame: CGRect(x: 20, y: 750, width: 120, height: 44),
@@ -72,7 +71,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         let menuButton = createButton(
             image: "list.bullet",
             title: "Menu", frame: CGRect(x: 175, y: 680, width: 100, height: 44),
-            selector: #selector(loadButtonPressed),
+            selector: #selector(menuButtonPressed),
             textColour: .white,
             backgroundColor: .systemBlue
         )
@@ -90,7 +89,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         let loadButton = createButton(
             image: "square.and.arrow.up",
             title: "Load", frame: CGRect (x: 310, y: 750, width: 100, height: 44),
-            selector: #selector(testButtonPressed),
+            selector: #selector(loadButtonPressed),
             textColour: .white,
             backgroundColor: .systemBlue
         )
@@ -189,7 +188,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
 
     // TODO: Create a UI button to handle this function
-    private func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
+    internal func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
         for node in nodes {
             if let geometry = node.geometry {
                 let material = geometry.firstMaterial!
@@ -199,7 +198,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     }
     
     // MARK: - IBAction functons
-    @IBAction private func testButtonPressed(_ sender: UIButton){
+    @IBAction private func loadButtonPressed(_ sender: UIButton) {
         nodes = jsonManager.loadNodesFromJSONFile(fileName: "nodes.json")!
         for node in nodes {
             node.geometry = SCNSphere(radius: 0.01)
@@ -207,7 +206,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
-    @IBAction private func loadButtonPressed(_ sender: UIButton) {
+    @IBAction private func menuButtonPressed(_ sender: UIButton) {
         // Open menu
         let myMenuView = MenuView()
         let hostingController = UIHostingController(rootView: myMenuView)
@@ -290,7 +289,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-
     // Error message displayed when the user does not give their drawing a name
     private func showErrorMessage(message: String) {
         let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
