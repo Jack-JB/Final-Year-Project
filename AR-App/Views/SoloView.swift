@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  SoloViewController.swift
 //  AR-App
 //
 //  Created by Jack Burrows on 27/01/2023.
@@ -9,172 +9,301 @@ import SwiftUI
 import RealityKit
 import UIKit
 import ARKit
+import SceneKit
 
-struct ARViewWrapper: UIViewRepresentable {
-    let arView = ARSCNView()
-    var nodes: [SCNNode] = []
+
+class SoloiewController: UIViewController, ARSCNViewDelegate {
+
+    // MARK: - Class Properties
+  
+    @IBOutlet public var sceneView: ARSCNView!
+    private var currentNode: SCNNode?
+    private var previousNode: SCNNode?
+    private var firstNode: SCNNode?
+    private var nodes: [SCNNode] = []
+    private var rootNode = SCNNode()
+
+    private var jsonManager = JsonManager()
     
-    func makeUIView(context: Context) -> ARSCNView {
-        arView.delegate = context.coordinator
+    // MARK: - View Management
+    override internal func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Set up the ARSCNView
+        sceneView = ARSCNView(frame: view.bounds)
+        sceneView.delegate = self
+        view.addSubview(sceneView)
+        
+        // Set the view's delegate
+        sceneView.delegate = self
+        
+        // Show statistics such as fps and timing information
+        sceneView.showsStatistics = true
+        
+        // Configure the session
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal]
-        arView.session.run(configuration)
-        return arView
-    }
-    
-    func updateUIView(_ uiView: ARSCNView, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(ARView())
-    }
-    
-    class Coordinator: NSObject, ARSCNViewDelegate {
-        var parent: ARView
+        sceneView.session.run(configuration)
         
-        init(_ parent: ARView) {
-            self.parent = parent
+        // Make the view controller the first responder
+        becomeFirstResponder()
+    }
+    
+    override internal func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Create a session configuration
+        let configuration = ARWorldTrackingConfiguration()
+
+        // Enable plane detection
+        configuration.planeDetection = [.horizontal, .vertical]
+        
+        // MARK: - UI component declaration
+        
+        let saveButton = createButton(
+            image: "square.and.arrow.down",
+            title: "Save", frame: CGRect(x: 20, y: 750, width: 120, height: 44),
+            selector: #selector(saveButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(saveButton)
+        
+        let menuButton = createButton(
+            image: "list.bullet",
+            title: "Menu", frame: CGRect(x: 175, y: 680, width: 100, height: 44),
+            selector: #selector(loadButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(menuButton)
+        
+        let clearButton = createButton(
+            image: "trash",
+            title: "Clear", frame: CGRect(x: 175, y: 750, width: 100, height: 44),
+            selector: #selector(clearButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(clearButton)
+        
+        let loadButton = createButton(
+            image: "square.and.arrow.up",
+            title: "Load", frame: CGRect (x: 310, y: 750, width: 100, height: 44),
+            selector: #selector(testButtonPressed),
+            textColour: .white,
+            backgroundColor: .systemBlue
+        )
+        view.addSubview(loadButton)
+
+        // Run the view's session
+        sceneView.session.run(configuration)
+    }
+    
+    func createButton(image: String, title: String, frame: CGRect, selector: Selector, textColour: UIColor, backgroundColor: UIColor) -> UIButton {
+        let button = UIButton(type: .system)
+        let imageIcon = UIImage(systemName: image)?.withTintColor(textColour, renderingMode: .alwaysOriginal)
+        button.setTitle(title, for: .normal)
+        button.setImage(imageIcon, for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
+        button.frame = frame
+        button.addTarget(self, action: selector, for: .touchUpInside)
+        button.backgroundColor = backgroundColor
+        button.setTitleColor(textColour, for: .normal)
+        button.layer.cornerRadius = 10
+        
+        return button
+    }
+
+    // MARK: - Touch event management
+    override internal func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
+        let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
+        
+        let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
+        let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
+        
+        var hitResult: ARRaycastResult
+        
+        if let horizontalHitResult = horizontalResults.first {
+            hitResult = horizontalHitResult
+        } else if let verticalHitResult = verticalResults.first {
+            hitResult = verticalHitResult
+        } else {
+            return
         }
         
-        func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-            if let planeAnchor = anchor as? ARPlaneAnchor {
-                let planeNode = SCNNode(geometry: SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z)))
-                planeNode.position = SCNVector3(planeAnchor.center.x, 0, planeAnchor.center.z)
-                planeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
-                planeNode.eulerAngles.x = -.pi / 2
-                node.addChildNode(planeNode)
+        let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+        
+        currentNode = SCNNode()
+        currentNode?.geometry = SCNSphere(radius: 0.01)
+        currentNode?.position = position
+        sceneView.scene.rootNode.addChildNode(currentNode!)
+    }
+    
+    // TODO: First and last node are not part of the array, this needs fixing as they will not be destroyed
+    override internal func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
+        let horizontalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .horizontal)!
+        let horizontalResults = sceneView.session.raycast(horizontalRaycastQuery)
+        
+        // Create a raycast query from the touch location, allowing estimated planes and aligning with vertical planes
+        let verticalRaycastQuery = sceneView.raycastQuery(from: touch.location(in: sceneView), allowing: .estimatedPlane, alignment: .vertical)!
+        let verticalResults = sceneView.session.raycast(verticalRaycastQuery)
+        
+        var hitResult: ARRaycastResult
+        
+        if let horizontalHitResult = horizontalResults.first {
+            hitResult = horizontalHitResult
+        } else if let verticalHitResult = verticalResults.first {
+            hitResult = verticalHitResult
+        } else {
+            return
+        }
+        // Extract the 3D position of the hit result
+        let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+          
+        // Create a new sphere node at the touch position
+        createSphereNode(at: position, nodes: &nodes, previousNode: &previousNode, rootNode: sceneView.scene.rootNode)
+    }
+
+    // MARK: - Node Handler
+    // This function creates the sphere nodes to allow the drawing within the app
+    private func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?, rootNode: SCNNode) {
+            
+        // Create a new sphere node at the touch position
+        let sphereNode = SCNNode()
+            
+        sphereNode.geometry = SCNSphere(radius: 0.01)
+        sphereNode.position = position
+        
+        // Add the sphere node to the parent node
+        rootNode.addChildNode(sphereNode)
+            
+        // Update the previous node to be the current sphere node for the next point
+        nodes.append(sphereNode)
+        previousNode = sphereNode
+    }
+
+    // TODO: Create a UI button to handle this function
+    private func changeNodeColour(_ nodes: [SCNNode], color: UIColor) {
+        for node in nodes {
+            if let geometry = node.geometry {
+                let material = geometry.firstMaterial!
+                material.diffuse.contents = color
             }
         }
+    }
+    
+    // MARK: - IBAction functons
+    @IBAction private func testButtonPressed(_ sender: UIButton){
+        nodes = jsonManager.loadNodesFromJSONFile(fileName: "nodes.json")!
+        for node in nodes {
+            node.geometry = SCNSphere(radius: 0.01)
+            sceneView.scene.rootNode.addChildNode(node)
+        }
+    }
+    
+    @IBAction private func loadButtonPressed(_ sender: UIButton) {
+        // Open menu
+        let myMenuView = MenuView()
+        let hostingController = UIHostingController(rootView: myMenuView)
+        present(hostingController, animated: true, completion: nil)
+    }
+    
+    @IBAction private func saveButtonPressed(_ sender: Any) {
+        // Json file used for testing
+        // MARK: -  ====== DELETE  =======
+        if jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "test.json") {
+            print("JSON file saved successfully!")
+        } else {
+            print("Error saving JSON file.")
+        }
         
-         func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
-            
-            let horizontalRaycastQuery = parent.arView.raycastQuery(from: touch.location(in: parent.arView), allowing: .estimatedPlane, alignment: .horizontal)!
-            let horizontalResults = parent.arView.session.raycast(horizontalRaycastQuery)
-            
-            let verticalRaycastQuery = parent.arView.raycastQuery(from: touch.location(in: parent.arView), allowing: .estimatedPlane, alignment: .vertical)!
-            let verticalResults = parent.arView.session.raycast(verticalRaycastQuery)
-            
-            var hitResult: ARRaycastResult
-            
-            if let horizontalHitResult = horizontalResults.first {
-                hitResult = horizontalHitResult
-            } else if let verticalHitResult = verticalResults.first {
-                hitResult = verticalHitResult
-            } else {
+        // Create an alert controller with a text field for entering the document name
+        let alertController = UIAlertController(title: "Save Drawing", message: "Enter a name for your drawing:", preferredStyle: .alert)
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Drawing Name"
+        }
+        
+        // Add save and cancel actions to the alert controller
+        let saveAction = UIAlertAction(title: "Save", style: .default) { (action) in
+            // Get the text entered in the text field and use it as the document name
+            guard let drawingName = alertController.textFields?.first?.text, !drawingName.isEmpty else {
+                // Show an error message if no name was entered
+                self.showErrorMessage(message: "Please enter a name for your drawing.")
                 return
             }
             
-            let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+            let collectionName = "myCollection"
             
-            let currentNode = SCNNode()
-             currentNode.geometry = SCNSphere(radius: 1.0)
-            currentNode.position = position
-            parent.arView.scene.rootNode.addChildNode(currentNode)
+            let jsonString = self.jsonManager.nodesToJSON(nodes: self.nodes)
+            let jsonData = jsonString!.data(using: .utf8)!
+            let serialisedJson = try! JSONSerialization.jsonObject(with: jsonData, options: []) as! [String: Any]
+            
+            // Send the JSON data to Firestore using the drawing name as the document ID
+            self.firebaseManager.sendJSONDataToFirestore(data: serialisedJson, collectionName: collectionName, documentName: drawingName)
         }
+        alertController.addAction(saveAction)
         
-        func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-            guard let touch = touches.first else { return }
-            guard let arView = touch.view as? ARView else { return }
-            
-            // Create a raycast query from the touch location, allowing estimated planes and aligning with horizontal planes
-            let horizontalRaycastQuery = arView.arView.raycastQuery(from: touch.location(in: arView.arView), allowing: .estimatedPlane, alignment: .horizontal)!
-            let horizontalResults = arView.arView.session.raycast(horizontalRaycastQuery)
-            
-            // Create a raycast query from the touch location, allowing estimated planes and aligning with vertical planes
-            let verticalRaycastQuery = arView.arView.raycastQuery(from: touch.location(in: arView.arView), allowing: .estimatedPlane, alignment: .vertical)!
-            let verticalResults = arView.arView.session.raycast(verticalRaycastQuery)
-            
-            var hitResult: ARRaycastResult
-            
-            if let horizontalHitResult = horizontalResults.first {
-                hitResult = horizontalHitResult
-            } else if let verticalHitResult = verticalResults.first {
-                hitResult = verticalHitResult
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        // Present the alert controller
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    @IBAction private func showMenuButtonPressed(_ sender: UIButton) {
+        let menuView = MenuView()
+        let hostingController = UIHostingController(rootView: menuView)
+        present(hostingController, animated: true, completion: nil)
+    }
+    
+    @IBAction private func clearButtonPressed(_ sender: Any) {
+        clear()
+    }
+    
+    // MARK: - Main class functions
+    
+    private func loadData(documentId: String, completion: @escaping (Data?, Error?) -> Void) {
+        firebaseManager.getDataFromFirestoreById(documentId: documentId, collectionName: "myCollection") { data, error in
+            if let data = data {
+                do {
+                    let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                    completion(jsonData, nil)
+                } catch {
+                    completion(nil, error)
+                }
             } else {
-                return
+                completion(nil, error)
             }
-            
-            // Extract the 3D position of the hit result
-            let position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
-            
-            // Create a new sphere node at the touch position
-            let sphereNode = SCNNode()
-            sphereNode.geometry = SCNSphere(radius: 1.0)
-            sphereNode.position = position
-            
-            // Call the createSphereNode function with the position parameter
-            var nodes = [SCNNode]()
-            var previousNode: SCNNode?
-            createSphereNode(at: position, nodes: &nodes, previousNode: &previousNode)
         }
+    }
 
+    // Error message displayed when the user does not give their drawing a name
+    private func showErrorMessage(message: String) {
+        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+
+    private func removeNode(_ node: SCNNode) {
+        node.removeFromParentNode()
+        nodes = nodes.filter { $0 !== node }
+    }
+
+    private func clear() {
+        for node in nodes {
+            removeNode(node)
+        }
         
-        func createSphereNode(at position: SCNVector3, nodes: inout [SCNNode], previousNode: inout SCNNode?) {
-            // Create a new sphere node at the touch position
-            let sphereNode = SCNNode()
-            sphereNode.geometry = SCNSphere(radius: 0.01)
-            sphereNode.position = position
-            
-            // Add the sphere node to the scene
-            parent.arView.scene.rootNode.addChildNode(sphereNode)
-
-            
-            // Update the previous node to be the current sphere node for the next point
-            nodes.append(sphereNode)
-            previousNode = sphereNode
-        }
-
-
-    }
-
-}
-
-struct ContentView: View {
-    var body: some View {
-        ARView()
-    }
-}
-
-struct ARView: View {
-    @State private var nodes: [SCNNode] = []
-    let arView = ARViewWrapper().arView // Access the ARSCNView
-    
-    var body: some View {
-        ZStack {
-            GeometryReader { proxy in
-                ARViewWrapper()
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-            }
-            
-            HStack {
-                Button("Save") {
-                    save()
-                }
-                .padding()
-                
-                Button("Load") {
-                    load()
-                }
-                .padding()
-                
-                Button("Clear") {
-                    clear()
-                }
-                .padding()
-            }
+        rootNode.removeAllActions()
+        rootNode.removeAllAnimations()
+        rootNode.enumerateChildNodes { (node, _) in
+            node.removeFromParentNode()
         }
     }
-    
-    func save() {
-        // Save nodes to file
-    }
-    
-    func load() {
-        // Load nodes from file
-    }
-    
-    func clear() {
-        // Clear nodes
-    }
-}
-*/
+}*/
