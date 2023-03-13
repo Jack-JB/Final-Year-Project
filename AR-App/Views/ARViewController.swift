@@ -211,14 +211,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         let myMenuView = MenuView()
         let hostingController = UIHostingController(rootView: myMenuView)
         present(hostingController, animated: true, completion: nil)
-        
-        let testData: () = jsonManager.printJSONFileContents(fileName: "test.json")
-        let nodeData: () = jsonManager.printJSONFileContents(fileName: "nodes.json")
-        print("Test Data")
-        print(testData)
-        print("=================")
-        print("Node Data")
-        print(nodeData)
     }
     
     @IBAction private func saveButtonPressed(_ sender: Any) {

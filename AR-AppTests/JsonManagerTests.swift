@@ -8,7 +8,7 @@
 import XCTest
 import Firebase
 import SceneKit
-
+import FirebaseCore
 
 @testable import AR_App
 
@@ -23,7 +23,7 @@ class JsonManagerTests: XCTestCase {
     // Function called first, sets up the test environment
     override func setUp() {
         super.setUp()
-        FirebaseApp.configure()
+        //FirebaseApp.configure()
         jsonManager = JsonManager()
         fileName = "test.json"
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -39,7 +39,6 @@ class JsonManagerTests: XCTestCase {
     
     // Function called last to end the test environment and remove any testing files/data created during testing
     override func tearDown() {
-        try! FileManager.default.removeItem(at: fileURL)
         super.tearDown()
     }
     
@@ -63,7 +62,7 @@ class JsonManagerTests: XCTestCase {
         // Arrange not required, as it is all located within setUp()
         
         // ACT:
-        let fileExists = JsonManager().checkJSONFileExists(fileName: fileName)
+        let fileExists = jsonManager.checkJSONFileExists(fileName: fileName)
         
         // ASSERT:
         XCTAssertTrue(fileExists, "The JSON file should exist")

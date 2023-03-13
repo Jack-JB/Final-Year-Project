@@ -19,9 +19,10 @@ struct HomeView: View {
                     .frame(maxHeight: .infinity)
                 VStack {
                     NavigationLink(destination: ARView()) {
-                        StartButton(text: "Start Solo AR Experience", icon: "arkit")
+                        StartButton(text: "Start Group AR Experience", icon: "arkit")
                     }
-                    StartButton(text: "Start Group AR Experience", icon: "arkit")
+                    StartButton(text: "Start Solo AR Experience", icon: "arkit")
+                    // Add navigation link to solo experience, Not yet implemented.
                     
                     Text("App Build Version: \(buildNumber!)")
                         .frame(maxHeight: .infinity, alignment: .bottomTrailing)

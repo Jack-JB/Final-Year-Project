@@ -1,6 +1,7 @@
 import SwiftUI
 import SceneKit
 
+// Not currently being used in the implementation
 struct ExpandableButton: View {
     let buttonSize: CGFloat = 60
     let buttonPadding: CGFloat = 15
