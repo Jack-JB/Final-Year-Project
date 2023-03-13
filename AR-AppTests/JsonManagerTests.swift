@@ -23,6 +23,7 @@ class JsonManagerTests: XCTestCase {
     // Function called first, sets up the test environment
     override func setUp() {
         super.setUp()
+        FirebaseApp.configure()
         jsonManager = JsonManager()
         fileName = "test.json"
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
