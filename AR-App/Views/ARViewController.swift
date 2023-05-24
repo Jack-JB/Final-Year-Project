@@ -215,7 +215,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     
     @IBAction private func saveButtonPressed(_ sender: Any) {
         // Json file used for testing
-        // MARK: -  ====== DELETE  =======
         if jsonManager.saveNodesAsJSONFile(nodes: nodes, fileName: "test.json") {
             print("JSON file saved successfully!")
         } else {

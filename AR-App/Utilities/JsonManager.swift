@@ -17,63 +17,63 @@ class JsonManager {
     /// - Paramaters:
     ///     - nodes: The array of SCNNode
     /// - Returns: A Json string of converted SCNNode array data
-    func nodesToJSON(nodes: [SCNNode]) -> String? {
-        var jsonArray: [[String: Any]] = []
-        
-        for node in nodes {
-            // Create a dictionary to hold the node properties
-            var jsonDict: [String: Any] = [:]
-            // Add the node's name to the dictionary or empty string if nil
-            jsonDict["name"] = node.name ?? ""
+        func nodesToJSON(nodes: [SCNNode]) -> String? {
+            var jsonArray: [[String: Any]] = []
             
-            // Add the positional data to the dictionary
-            jsonDict["position"] = [
-                "x": node.position.x,
-                "y": node.position.y,
-                "z": node.position.z
-            ]
-            
-            // Add the node's scale to the dictionary
-            jsonDict["scale"] = [
-                "x": node.scale.x,
-                "y": node.scale.y,
-                "z": node.scale.z
-            ]
-            
-            // Add the rotational data to the dictionary
-            jsonDict["rotation"] = [
-                "x": node.rotation.x,
-                "y": node.rotation.y,
-                "z": node.rotation.z,
-                "w": node.rotation.w
-            ]
-            
-            // If the node contains material data, extract the colour data and add to the dictionary of R, G, B values
-            if let material = node.geometry?.firstMaterial {
-                if let colorContents = material.diffuse.contents as? SCNVector3 {
-                    let color = SCNVector3ToGLKVector3(colorContents)
-                    jsonDict["color"] = [
-                        "r": color.x,
-                        "g": color.y,
-                        "b": color.z
-                    ]
+            for node in nodes {
+                // Create a dictionary to hold the node properties
+                var jsonDict: [String: Any] = [:]
+                // Add the node's name to the dictionary or empty string if nil
+                jsonDict["name"] = node.name ?? ""
+                
+                // Add the positional data to the dictionary
+                jsonDict["position"] = [
+                    "x": node.position.x,
+                    "y": node.position.y,
+                    "z": node.position.z
+                ]
+                
+                // Add the node's scale to the dictionary
+                jsonDict["scale"] = [
+                    "x": node.scale.x,
+                    "y": node.scale.y,
+                    "z": node.scale.z
+                ]
+                
+                // Add the rotational data to the dictionary
+                jsonDict["rotation"] = [
+                    "x": node.rotation.x,
+                    "y": node.rotation.y,
+                    "z": node.rotation.z,
+                    "w": node.rotation.w
+                ]
+                
+                // If the node contains material data, extract the colour data and add to the dictionary of R, G, B values
+                if let material = node.geometry?.firstMaterial {
+                    if let colorContents = material.diffuse.contents as? SCNVector3 {
+                        let color = SCNVector3ToGLKVector3(colorContents)
+                        jsonDict["color"] = [
+                            "r": color.x,
+                            "g": color.y,
+                            "b": color.z
+                        ]
+                    }
                 }
+                jsonArray.append(jsonDict)
             }
-            jsonArray.append(jsonDict)
+            // Create a root dictionary with the key 'nodes' pointing to the array of Json objects
+            let rootDict = ["nodes": jsonArray]
+            do {
+                // Serialise the data to a Data object
+                let jsonData = try JSONSerialization.data(withJSONObject: rootDict, options: [])
+                // Convert and return the data as a string
+                let jsonString = String(data: jsonData, encoding: .utf8)
+                return jsonString
+            } catch {
+                print("Error converting nodes to JSON: \(error.localizedDescription)")
+                return nil
+            }
         }
-        // Create a root dictionary with the key 'nodes' pointing to the array of Json objects
-        let rootDict = ["nodes": jsonArray]
-        do {
-            // Serialise the data to a Data object
-            let jsonData = try JSONSerialization.data(withJSONObject: rootDict, options: [])
-            // Convert and return the data as a string
-            let jsonString = String(data: jsonData, encoding: .utf8)
-            return jsonString
-        } catch {
-            print("Error converting nodes to JSON: \(error.localizedDescription)")
-            return nil
-        }
-    }
     
     /// Save an array of SCNNode to a Json file
     ///

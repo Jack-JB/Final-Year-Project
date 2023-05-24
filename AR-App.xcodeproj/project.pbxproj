@@ -138,6 +138,7 @@
 		0458057F2983F81200A7966D /* AR-AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR-AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		045805832983F81200A7966D /* HomeViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewTests.swift; sourceTree = "<group>"; };
 		045805852983F81200A7966D /* AR_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0459C7EF29F6EA5A00CC2E0D /* TestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPlan.xctestplan; sourceTree = "<group>"; };
 		0462613729AE802900AD9935 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		04684E3D299CEA5200F52EE6 /* ExpandingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingButton.swift; sourceTree = "<group>"; };
 		0485F01A299D6E46009AD5CD /* JsonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonManager.swift; sourceTree = "<group>"; };
@@ -297,6 +298,7 @@
 			children = (
 				045805792983F81200A7966D /* JsonManagerTests.swift */,
 				04A2E6E129BA989A00149549 /* FirebaseManagerTests.swift */,
+				0459C7EF29F6EA5A00CC2E0D /* TestPlan.xctestplan */,
 			);
 			path = "AR-AppTests";
 			sourceTree = "<group>";

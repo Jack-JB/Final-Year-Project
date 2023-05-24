@@ -30,7 +30,7 @@ class JsonManagerTests: XCTestCase {
         fileURL = documentsDirectory.appendingPathComponent(fileName)
         
         let testData = [
-            ["name": "Jack", "age": 28],
+            ["name": "Jack", "age": 28] as [String : Any],
             ["name": "Helena", "age": 28]
         ]
         let jsonData = try! JSONSerialization.data(withJSONObject: testData, options: [])
